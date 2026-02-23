@@ -1,35 +1,216 @@
 # SmartSort AI Solutions
 
-A production-ready Flask-based e-learning and services marketplace with secure Paystack payments, admin dashboard, and professional email automation.
-
----
+A production-ready Flask e-learning and services marketplace with Paystack payment integration, secure admin dashboard, professional email automation, responsive design, and flexible pricing.
 
 ## Features
 
-✨ **Core Capabilities**
-- 🛒 Product catalog (courses, services, e-books)
-- 💳 Secure Paystack payment integration with HMAC-SHA512 webhook verification
+✅ **E-Learning & Services Marketplace**
+- 🛒 Product catalog (courses, services)
+- 💳 Flexible payment amounts (customers enter custom price)
+- Secure Paystack payment integration with HMAC-SHA512 webhook verification
 - 📧 Professional email automation for payment confirmations
 - 🔐 Automatic access control - users granted access immediately upon successful payment
+
+✅ **Admin Dashboard & Security**
+- 🔐 Session-based admin login + HTTP Basic auth support
 - 📊 Admin dashboard with real-time order management and revenue analytics
-- 🎨 Professional responsive UI with gradient design
-- 🛡️ Production security (SECRET_KEY, HTTPS cookies, security headers, error handling)
-- 📝 Rotating file logging for audit trails and debugging
-- 🌐 Contact page with email and social media links
+- 🔍 Order filters (status, email) and manual fulfillment override
+- 🛡️ Production security (SECRET_KEY, HTTPS cookies, security headers, HMAC verification)
+
+✅ **Responsive Design**
+- 📱 Mobile-first UI with hamburger navigation
+- 🎨 Desktop/tablet/mobile optimization
+- ✨ Smooth animations and modern gradient styling
+
+✅ **Production Ready**
+- 📝 Rotating file logging for audit trails
+- 🚀 Deployment-ready for Render with Gunicorn
+- 🔒 Environment-based secrets management
+- 📊 Revenue tracking and reporting
 
 ---
 
-## Technology Stack
+## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Framework** | Flask 3.1.3 |
-| **Database** | SQLAlchemy 2.0.46 + SQLite |
-| **Payment** | Paystack API (HMAC-SHA512 verification) |
-| **Email** | Flask-Mail 0.9.1 |
-| **Frontend** | Jinja2 templates + custom CSS (1200+ lines) |
-| **Production** | Gunicorn 21.2.0 + Nginx |
-| **Logging** | RotatingFileHandler with 10MB rotation |
+- **Backend**: Flask 3.1.3, SQLAlchemy 2.0
+- **Database**: SQLite (dev) / PostgreSQL (production via Render)
+- **Payment**: Paystack API
+- **Email**: Flask-Mail (SMTP)
+- **Deployment**: Render with Gunicorn
+- **Frontend**: Responsive HTML/CSS/JavaScript
+- **Environment**: Python 3.11+
+
+---
+
+## Installation & Setup
+
+### Local Development
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/jmpeters002-coder/https-smartsortaisolutions.git
+   cd https-smartsortaisolutions
+   ```
+
+2. **Create and activate virtual environment**
+   ```bash
+   python -m venv venv
+   # Windows
+   venv\Scripts\Activate.ps1
+   # macOS/Linux
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set up environment variables**
+   Create a `.env` file in the project root:
+   ```env
+   # Flask Configuration
+   FLASK_ENV=development
+   DEBUG=True
+   SECRET_KEY=your_generated_secret_key_here
+   SECURITY_PASSWORD_SALT=your_generated_salt_here
+
+   # Admin Credentials
+   ADMIN_USERNAME=admin_4bbf17d1
+   ADMIN_PASSWORD=POs-G96HzjFnfdTzh5U6Rgbjk847H2-E
+
+   # Paystack API Keys
+   PAYSTACK_SECRET_KEY=sk_test_your_paystack_secret_key
+   PAYSTACK_PUBLIC_KEY=pk_test_your_paystack_public_key
+   PUBLIC_URL=http://127.0.0.1:5000
+
+   # Email Configuration (Gmail example)
+   MAIL_SERVER=smtp.gmail.com
+   MAIL_PORT=587
+   MAIL_USE_TLS=True
+   MAIL_USERNAME=your_email@gmail.com
+   MAIL_PASSWORD=your_app_password
+   MAIL_DEFAULT_SENDER=support@smartsort.ai
+   ```
+
+5. **Run the development server**
+   ```bash
+   python app.py
+   ```
+   Visit `http://127.0.0.1:5000` in your browser.
+
+---
+
+## Environment Variables
+
+### Required for Production (Render)
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `SECRET_KEY` | Flask session encryption key (32 bytes hex) | `6367aac0dedf098c3d16caef5a81475ea77044603d7a4654a639bdff7afcc64d` |
+| `SECURITY_PASSWORD_SALT` | Password salt for security extensions (16 bytes hex) | `2d550dc96b3127d81d5bb8828bb22b73` |
+| `ADMIN_USERNAME` | Admin dashboard username | `admin_4bbf17d1` |
+| `ADMIN_PASSWORD` | Admin dashboard password | `POs-G96HzjFnfdTzh5U6Rgbjk847H2-E` |
+| `PAYSTACK_SECRET_KEY` | Paystack API secret key | `sk_test_...` |
+| `PAYSTACK_PUBLIC_KEY` | Paystack API public key | `pk_test_...` |
+| `PUBLIC_URL` | Base URL for payment callbacks | `https://your-render-domain.onrender.com` |
+| `MAIL_USERNAME` | Email sender address | `noreply@smartsort.ai` |
+| `MAIL_PASSWORD` | Email account password/token | (app-specific password) |
+
+---
+
+## Admin Access
+
+### Login Methods
+
+1. **Session-based Login** (recommended for web)
+   - Visit `/admin/login`
+   - Enter `ADMIN_USERNAME` and `ADMIN_PASSWORD`
+   - Session expires after 30 days (configurable)
+
+2. **HTTP Basic Authentication** (for API/automation)
+   ```bash
+   curl -u admin_4bbf17d1:POs-G96HzjFnfdTzh5U6Rgbjk847H2-E https://your-domain.com/admin/dashboard
+   ```
+
+### Features
+- View all orders with filters (status, email)
+- Track revenue by product type
+- Manual order fulfillment override
+- Access grant history
+
+---
+
+## Deployment to Render
+
+### 1. Connect GitHub Repository
+
+1. Log in to [Render](https://render.com)
+2. Click **New** → **Web Service**
+3. Select **Build and deploy from a Git repository**
+4. Connect your GitHub account and select `https-smartsortaisolutions`
+
+### 2. Configure Service
+
+| Setting | Value |
+|---------|-------|
+| **Name** | smartsort-ai-v1 |
+| **Environment** | Python 3 |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `gunicorn app:app --bind 0.0.0.0:$PORT --workers 3` |
+| **Instance Type** | Free or Starter (upgrade as needed) |
+
+### 3. Set Environment Variables
+
+In Render dashboard → **Environment**, add:
+
+```
+SECRET_KEY=6367aac0dedf098c3d16caef5a81475ea77044603d7a4654a639bdff7afcc64d
+SECURITY_PASSWORD_SALT=2d550dc96b3127d81d5bb8828bb22b73
+ADMIN_USERNAME=admin_4bbf17d1
+ADMIN_PASSWORD=POs-G96HzjFnfdTzh5U6Rgbjk847H2-E
+PAYSTACK_SECRET_KEY=sk_test_your_key
+PAYSTACK_PUBLIC_KEY=pk_test_your_key
+PUBLIC_URL=https://your-render-domain.onrender.com
+FLASK_ENV=production
+DEBUG=False
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USE_TLS=True
+MAIL_DEFAULT_SENDER=support@smartsort.ai
+```
+
+### 4. Deploy
+
+Click **Deploy** and wait for the build to complete. Your app will be live at `https://your-service-name.onrender.com`.
+
+### Post-Deployment
+
+- Verify health check: `https://your-domain.com/` should return the home page
+- Test admin login: `https://your-domain.com/admin/login`
+- Update Paystack webhook URL to point to your Render domain
+
+---
+
+## Payment Flow
+
+### Customer Flow
+1. Browse courses/services
+2. Click "Enroll Now" or "Request Service"
+3. Enter email and **custom payment amount**
+4. Redirected to Paystack payment page
+5. Complete payment
+6. On success, automatic access is granted
+7. Confirmation email sent
+
+### Admin Flow
+1. Log in to `/admin/dashboard`
+2. View orders with revenue metrics
+3. Optionally override fulfillment for pending orders
+
+**Security**: Webhook verification prevents forged payments using secret key HMAC hashing.
 
 ---
 
@@ -37,117 +218,69 @@ A production-ready Flask-based e-learning and services marketplace with secure P
 
 ```
 smartsort-ai-v1/
-├── app.py                      # Main Flask application (568 lines)
-├── models.py                   # SQLAlchemy models (Product, Order, UserAccess)
-├── .env                        # Environment configuration (Paystack, email, secrets)
-├── .gitignore                  # Git ignore rules
-├── requirements                # Python dependencies (23 packages)
-├── DEPLOYMENT.md               # Complete deployment guide
+├── app.py                      # Main Flask application
+├── models.py                   # Database models (Product, Order, UserAccess)
+├── requirements.txt            # Python dependencies
+├── .gitignore                  # Git exclusions
+├── .gitattributes              # Git LFS tracking
 ├── README.md                   # This file
+├── DEPLOYMENT.md               # Deployment guide
 ├── templates/
-│   ├── base.html              # Navigation layout
-│   ├── index.html             # Homepage hero
-│   ├── courses.html           # Course listing
-│   ├── services.html          # Services listing
+│   ├── base.html              # Base template (nav, footer, responsive)
+│   ├── index.html             # Home page
+│   ├── courses.html           # Courses with enrollment modal
+│   ├── services.html          # Services with enrollment modal
 │   ├── contact.html           # Contact page
-│   ├── admin_dashboard.html   # Admin console (orders, revenue, filters)
-│   ├── course_access.html     # Course access confirmation
+│   ├── admin_login.html       # Admin login form
+│   ├── admin_dashboard.html   # Admin dashboard
+│   ├── course_access.html     # Course access page
 │   ├── service_confirmation.html # Service confirmation
-│   ├── 404.html               # Not found error page
-│   ├── 403.html               # Access forbidden error page
-│   └── 500.html               # Server error page
-├── statics/
-│   ├── css/
-│   │   └── style.css          # Complete styling (1217 lines)
-│   ├── js/
-│   │   └── script.js          # Frontend scripts
-│   └── images/
-└── instance/                  # Instance folder (logs, database)
-    ├── database.db            # SQLite database
-    └── logs/
-        └── smartsort.log      # Application logs (rotating)
+│   ├── 403.html, 404.html, 500.html # Error pages
+│   └── statics/
+│       ├── css/style.css      # Responsive design
+│       └── js/script.js       # Mobile nav toggle
+├── logs/
+│   └── smartsort.log          # Rotating log file
+└── instance/
+    └── database.db            # SQLite database (dev only)
 ```
 
 ---
 
-## Quick Start
+## API Endpoints
 
-### Prerequisites
-- Python 3.8+
-- pip package manager
-- Virtual environment (recommended)
+### Public
+- `GET /` - Home page
+- `GET /courses` - Course catalog
+- `GET /services` - Services catalog
+- `GET /contact` - Contact page
+- `POST /create-order/<product_id>` - Create order with custom amount
+- `GET /verify-payment` - Paystack callback
+- `POST /webhook` - Paystack webhook (HMAC verified)
+- `GET /access/<reference>` - Access purchased product
+- `GET /check-access/<email>/<product_id>` - Check user access
+- `GET /my-access/<email>` - Get all user accesses
 
-### Installation
-
-1. **Clone or download the project**
-   ```bash
-   cd smartsort-ai-v1
-   ```
-
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   
-   # Activate it
-   # Windows:
-   venv\Scripts\activate
-   # Linux/Mac:
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements
-   ```
-
-4. **Configure environment**
-   - Copy `.env.example` or create `.env`:
-   ```
-   PAYSTACK_PUBLIC_KEY=pk_test_xxxxxxxxx
-   PAYSTACK_SECRET_KEY=sk_test_xxxxxxxxx
-   SECRET_KEY=generate_with: python -c "import secrets; print(secrets.token_hex(32))"
-   FLASK_ENV=development
-   DEBUG=True
-   
-   MAIL_SERVER=smtp.gmail.com
-   MAIL_PORT=587
-   MAIL_USE_TLS=True
-   MAIL_USERNAME=your-email@gmail.com
-   MAIL_PASSWORD=your-app-password
-   MAIL_DEFAULT_SENDER=noreply@smartsortai.com
-   ```
-
-5. **Run application**
-   ```bash
-   python app.py
-   ```
-   
-   Application runs at: `http://127.0.0.1:5000`
+### Admin (Protected)
+- `GET /admin/login` - Admin login form
+- `POST /admin/login` - Submit login credentials
+- `GET /admin/dashboard` - Admin dashboard
+- `POST /admin/override/<order_id>` - Manual fulfillment override
+- `GET /admin/logout` - Logout
 
 ---
 
-## Payment Flow
+## Paystack Configuration
 
-```
-1. User selects product (course/service/e-book)
-   ↓
-2. Clicks "Pay" → Redirected to Paystack payment page
-   ↓
-3. Customer enters payment details (demo: 4111 1111 1111 1111)
-   ↓
-4. Paystack verifies payment → Sends webhook to /webhook
-   ↓
-5. App verifies webhook signature (HMAC-SHA512)
-   ↓
-6. If valid:
-   - Mark Order.status = "paid"
-   - Create UserAccess record (automatic fulfillment)
-   - Send confirmation email with course link
-   ↓
-7. User can access course via /access/<payment_reference>
-```
+### Webhook Setup
 
-**Security**: Webhook verification prevents forged payments using secret key HMAC hashing.
+1. Log in to [Paystack Dashboard](https://dashboard.paystack.com)
+2. Go to **Settings** → **API Keys & Webhooks**
+3. Add webhook URL: `https://your-render-domain.onrender.com/webhook`
+4. Select events:
+   - `charge.success`
+   - `charge.failed`
+5. Copy your **Secret Key** and **Public Key** to Render environment variables
 
 ---
 
@@ -158,8 +291,8 @@ smartsort-ai-v1/
 id (INT PRIMARY KEY)
 title VARCHAR - Course title or service name
 description TEXT - Product details
-price FLOAT - Cost in NGN
-product_type VARCHAR - "course", "service", or "ebook"
+price FLOAT - Suggested price (user can override)
+product_type VARCHAR - "course" or "service"
 resource_link VARCHAR - URL to course/service material
 created_at DATETIME - Creation timestamp
 ```
@@ -170,7 +303,7 @@ id (INT PRIMARY KEY)
 customer_email VARCHAR NOT NULL - Buyer email
 product_id INT FOREIGN KEY -> Product.id
 payment_reference VARCHAR UNIQUE - Paystack reference ID
-status VARCHAR - "pending", "paid", or "failed"
+status VARCHAR - "pending" or "paid"
 created_at DATETIME - Order timestamp
 ```
 
@@ -187,17 +320,65 @@ UNIQUE CONSTRAINT (customer_email, product_id) - Prevent duplicates
 
 ---
 
-## Admin Dashboard
+## Security Notes
 
-Access at: `/admin` (no auth required in development; **add authentication in production**)
+⚠️ **Never commit secrets to Git:**
+- Use `.env` locally (ignored by `.gitignore`)
+- Use Render environment variables for production
+- Rotate passwords and API keys regularly
 
-**Features:**
-- 📊 Stats: Total orders, revenue, pending orders, access granted
-- 🔍 Filters: By status, email, product, date range
-- 📋 Orders table: Email, product, amount, status, timestamps
-- 💰 Revenue breakdown: By product type (courses vs services vs e-books)
-- ✅ Manual fulfillment: Grant access to paid but unreceived orders
-- 📝 Access logs: Recent UserAccess grants with timestamps
+✅ **Best Practices:**
+- Keep `SECRET_KEY` and `SECURITY_PASSWORD_SALT` random and unique
+- Use HTTPS only in production (`SESSION_COOKIE_SECURE=True`)
+- Enable webhook signature verification (already implemented)
+- Sanitize user input (Flask handles via Jinja2 escaping)
+- Rate-limit admin login attempts (optional: use fail2ban or similar)
+
+---
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| **Build fails on Render with `requirements.txt` not found** | Ensure `requirements.txt` is in repo root and pushed |
+| **Admin login not working** | Verify `ADMIN_USERNAME` and `ADMIN_PASSWORD` are set in Render environment |
+| **Payment webhook not received** | Check webhook URL in Paystack dashboard matches your Render domain |
+| **Email not sending** | Verify SMTP credentials; use app-specific password for Gmail (not account password) |
+| **Responsive design not working** | Ensure `meta viewport` tag is in `templates/base.html` |
+| **Database locked** | Delete `instance/database.db` and restart app |
+
+---
+
+## Support & Resources
+
+- **Paystack Docs**: https://paystack.com/docs
+- **Flask Docs**: https://flask.palletsprojects.com
+- **Render Docs**: https://docs.render.com
+- **GitHub Repo**: https://github.com/jmpeters002-coder/https-smartsortaisolutions
+
+---
+
+## License
+
+© 2026 SmartSort AI Solutions. All rights reserved.
+
+---
+
+## Changelog
+
+### v1.1.0 (2026-02-23)
+- ✅ Admin authentication (session + HTTP Basic auth)
+- ✅ Responsive mobile-first design with hamburger nav
+- ✅ Flexible payment amounts (custom pricing)
+- ✅ Git LFS support for model binaries
+- ✅ Render deployment ready with Gunicorn
+
+### v1.0.0 (2026-01-15)
+- Initial release
+- Paystack payment integration
+- Email automation
+- Admin dashboard
+- SQLAlchemy ORM
 
 ---
 
