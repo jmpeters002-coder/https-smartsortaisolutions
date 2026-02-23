@@ -10,6 +10,9 @@ venv/
 .venv/
 env/
 
+# Local env file
+.env
+
 # Instance folder
 instance/
 

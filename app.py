@@ -23,6 +23,9 @@ app.jinja_env.auto_reload = True
 # PHASE 5 — SECURITY CONFIGURATION
 # Secret key for session management and CSRF protection
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY") or secrets.token_hex(32)
+# Salt used by Flask-Security (or other password hashing extensions)
+# Provide `SECURITY_PASSWORD_SALT` in your Render environment variables
+app.config['SECURITY_PASSWORD_SALT'] = os.getenv("SECURITY_PASSWORD_SALT") or secrets.token_hex(16)
 
 # Flask mode (development | production)
 app.config['ENV'] = os.getenv("FLASK_ENV", "production")
