@@ -194,8 +194,17 @@ def contact():
 @app.route("/create-order/<int:product_id>", methods=["POST"])
 def create_order(product_id):
     email = request.form.get("email")
+    custom_amount = request.form.get("amount")
 
     product = Product.query.get_or_404(product_id)
+
+    # Validate custom amount
+    try:
+        amount_float = float(custom_amount) if custom_amount else product.price
+        if amount_float <= 0:
+            return "Amount must be greater than 0", 400
+    except (ValueError, TypeError):
+        return "Invalid amount entered", 400
 
     # Create order first
     order = Order(
@@ -208,7 +217,7 @@ def create_order(product_id):
     db.session.commit()
 
     # Paystack expects amount in kobo (multiply by 100)
-    amount = int(product.price * 100)
+    amount = int(amount_float * 100)
 
     headers = {
         "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",

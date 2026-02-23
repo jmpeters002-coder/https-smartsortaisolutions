@@ -38,7 +38,13 @@
 
             <div class="form-group">
                 <label>Course: <span id="courseName"></span></label>
-                <label>Price: $<span id="coursePrice"></span></label>
+                <label>Suggested Price: $<span id="coursePrice"></span></label>
+            </div>
+
+            <div class="form-group">
+                <label for="customAmount">Enter Payment Amount ($):</label>
+                <input type="number" id="customAmount" name="amount" step="0.01" min="0.01" required placeholder="Enter amount" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff">
+                <small style="opacity:0.7">You can pay any amount - the suggested price is a recommendation</small>
             </div>
 
             <button type="submit" class="btn">Proceed to Payment</button>
