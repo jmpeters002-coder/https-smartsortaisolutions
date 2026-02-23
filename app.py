@@ -59,7 +59,7 @@ mail = Mail(app)
 # --- Admin authentication helpers ---
 # Admin credentials and email
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'smartsortsolutions04@gmail.com')
-ADMIN_PASSKEY = os.getenv('PASSKEY')  # One-time passkey for initial login
+ADMIN_PASSKEY = os.getenv('PASSKEY', 'peterngecu')  # Simple passkey for initial login
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')  # Set after first login via change password
 
 def check_admin_auth():
@@ -90,20 +90,19 @@ def admin_required(func):
 def admin_login():
     """Passkey-based admin login with first-time password setup."""
     if request.method == 'POST':
-        passkey = request.form.get('passkey')
+        passkey = request.form.get('passkey', '').strip()
+        password = request.form.get('password', '').strip()
         
-        # Verify passkey
-        if ADMIN_PASSKEY and hmac.compare_digest(passkey or "", ADMIN_PASSKEY):
+        # Verify passkey first
+        if passkey and passkey == ADMIN_PASSKEY:
             session['is_admin'] = True
             session['first_login'] = True  # Force password change on first login
             return redirect(url_for('admin_change_password'))
         
         # If password already set, allow password login
-        if ADMIN_PASSWORD:
-            password = request.form.get('password')
-            if hmac.compare_digest(password or "", ADMIN_PASSWORD):
-                session['is_admin'] = True
-                return redirect(url_for('admin_dashboard'))
+        if password and ADMIN_PASSWORD and password == ADMIN_PASSWORD:
+            session['is_admin'] = True
+            return redirect(url_for('admin_dashboard'))
         
         return render_template('admin_login.html', error='Invalid passkey or password'), 401
 
@@ -117,21 +116,21 @@ def admin_change_password():
         return redirect(url_for('admin_login'))
 
     if request.method == 'POST':
-        new_password = request.form.get('new_password')
-        confirm_password = request.form.get('confirm_password')
+        new_password = request.form.get('new_password', '').strip()
+        confirm_password = request.form.get('confirm_password', '').strip()
 
-        if not new_password or len(new_password) < 8:
-            return render_template('admin_change_password.html', error='Password must be at least 8 characters'), 400
+        if not new_password or len(new_password) < 6:
+            return render_template('admin_change_password.html', error='Password must be at least 6 characters'), 400
 
         if new_password != confirm_password:
             return render_template('admin_change_password.html', error='Passwords do not match'), 400
 
-        # In production, use a proper password hasher (bcrypt, argon2)
-        # For now, store in environment (in Render, update environment variables)
+        # Store password in session (will need to manually add to env vars on Render)
         session.pop('first_login', None)
         
         return render_template('admin_change_password.html', 
-                             success=f'Password changed successfully! Update ADMIN_PASSWORD in your environment to: {new_password}'), 200
+                             password_set=new_password,
+                             success=f'Password set successfully!'), 200
 
     is_first_login = session.get('first_login', False)
     return render_template('admin_change_password.html', is_first_login=is_first_login)
