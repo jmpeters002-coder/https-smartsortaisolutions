@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="access-header">
+    <h1>🎓 Course Access Granted</h1>
+</section>
+
+<section class="access-content">
+    <div class="container access-card">
+        <div class="access-success">
+            <div class="success-icon">✅</div>
+            <h2>{{ product.title }}</h2>
+            <p class="payment-status">Payment confirmed! Your access is ready.</p>
+        </div>
+
+        <div class="access-details">
+            <h3>Course Details</h3>
+            <p>{{ product.description }}</p>
+
+            {% if product.resource_link %}
+            <div class="access-action">
+                <p class="action-label">Click below to access your course:</p>
+                <a href="{{ product.resource_link }}" target="_blank" class="btn access-btn">
+                    🚀 Access Course Materials
+                </a>
+            </div>
+            {% else %}
+            <div class="access-action">
+                <p class="action-label">Course will be available soon.</p>
+                <p class="note">Check your email for updates.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="next-steps">
+            <h3>What's Next?</h3>
+            <ul>
+                <li>📧 Check your email for course materials and credentials</li>
+                <li>📚 Access the course materials using the link above</li>
+                <li>💬 Join our community for support and discussions</li>
+                <li>🎯 Complete lessons and track your progress</li>
+            </ul>
+        </div>
+
+        <div class="support-info">
+            <p>Have questions? <a href="/contact">Contact our support team</a></p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="courses-header">
+    <h1>Our Courses</h1>
+    <p>Explore our comprehensive learning paths designed to build practical AI and web development skills.</p>
+</section>
+
+<section class="courses-container">
+    <div class="container cards">
+    {% for product in products %}
+
+        <div class="card">
+            <h3>{{ product.title }}</h3>
+            <p>{{ product.description }}</p>
+            <div class="price-tag">${{ product.price }}</div>
+
+            <button class="enroll-btn" data-id="{{ product.id }}" data-title="{{ product.title|e }}" data-price="{{ product.price }}">Enroll Now</button>
+        </div>
+
+    {% endfor %}
+    </div>
+</section>
+
+<!-- Enrollment Modal -->
+<div id="enrollModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEnrollModal()">&times;</span>
+        <h2>Enroll Now</h2>
+        <form method="POST" id="enrollForm">
+            <input type="hidden" id="productId" name="product_id">
+            
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
+
+            <div class="form-group">
+                <label>Course: <span id="courseName"></span></label>
+                <label>Price: $<span id="coursePrice"></span></label>
+            </div>
+
+            <button type="submit" class="btn">Proceed to Payment</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function showEnrollModal(productId, productTitle, productPrice) {
+    document.getElementById('productId').value = productId;
+    document.getElementById('courseName').textContent = productTitle;
+    document.getElementById('coursePrice').textContent = productPrice;
+    document.getElementById('enrollModal').style.display = 'block';
+}
+
+function closeEnrollModal() {
+    document.getElementById('enrollModal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Enroll script loaded');
+
+    // Attach handlers to all enroll buttons (safe: uses data-attributes)
+    var buttons = document.querySelectorAll('.enroll-btn');
+    if (buttons.length === 0) {
+        console.warn('No enroll buttons found on page');
+    }
+    buttons.forEach(function(btn){
+        btn.addEventListener('click', function(){
+            const id = this.dataset.id;
+            const title = this.dataset.title;
+            const price = this.dataset.price;
+            showEnrollModal(id, title, price);
+        });
+    });
+
+    var enrollForm = document.getElementById('enrollForm');
+    if (enrollForm) {
+        enrollForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const productId = document.getElementById('productId').value;
+            const form = this;
+            form.action = '/create-order/' + productId;
+            form.submit();
+        });
+    } else {
+        console.warn('enrollForm not found');
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('enrollModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+});
+</script>
+
+{% endblock %}

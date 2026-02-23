@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="admin-header">
+    <h1>🔐 Admin Dashboard</h1>
+    <p>View orders, monitor revenue, and manage fulfillment</p>
+</section>
+
+<section class="admin-content">
+    <div class="container">
+        
+        <!-- STATS CARDS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_orders }}</div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-card paid">
+                <div class="stat-value">{{ paid_orders }}</div>
+                <div class="stat-label">Paid Orders</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-value">{{ pending_orders }}</div>
+                <div class="stat-label">Pending Orders</div>
+            </div>
+            <div class="stat-card revenue">
+                <div class="stat-value">${{ total_revenue | round(2) }}</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filters-section">
+            <h3>Filter Orders</h3>
+            <form method="get" class="filter-form">
+                <select name="status" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="paid" {% if request.args.get('status') == 'paid' %}selected{% endif %}>Paid</option>
+                    <option value="failed" {% if request.args.get('status') == 'failed' %}selected{% endif %}>Failed</option>
+                </select>
+                <input type="email" name="email" placeholder="Filter by email" value="{{ request.args.get('email', '') }}" class="filter-input">
+                <button type="submit" class="filter-btn">🔍 Search</button>
+            </form>
+        </div>
+
+        <!-- ORDERS TABLE -->
+        <div class="orders-section">
+            <h3>Orders</h3>
+            <div class="table-wrapper">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer Email</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Payment Ref</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr class="order-row status-{{ order.status }}">
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.customer_email }}</td>
+                            <td>{{ order.product.title }}</td>
+                            <td>${{ order.product.price }}</td>
+                            <td>
+                                <span class="status-badge status-{{ order.status }}">
+                                    {{ order.status | upper }}
+                                </span>
+                            </td>
+                            <td>{{ order.payment_reference[:20] if order.payment_reference else '—' }}</td>
+                            <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <form method="post" action="/admin/override/{{ order.id }}" style="display:inline;">
+                                    <button type="submit" class="action-btn override-btn" 
+                                        {% if order.status == 'paid' %}disabled{% endif %}>
+                                        ✓ Fulfill
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" style="text-align:center; padding:30px;">No orders found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- REVENUE BREAKDOWN -->
+        <div class="revenue-section">
+            <h3>Revenue Breakdown</h3>
+            <div class="revenue-grid">
+                <div class="revenue-card">
+                    <div class="revenue-type">By Product Type</div>
+                    {% for ptype, revenue in revenue_by_type.items() %}
+                    <div class="revenue-item">
+                        <span>{{ ptype | title }}</span>
+                        <span class="revenue-amount">${{ revenue | round(2) }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="revenue-card">
+                    <div class="revenue-type">By Order Status</div>
+                    {% for status, revenue in revenue_by_status.items() %}
+                    <div class="revenue-item status-{{ status }}">
+                        <span>{{ status | upper }}</span>
+                        <span class="revenue-amount">${{ revenue | round(2) }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCESS GRANTS -->
+        <div class="access-section">
+            <h3>User Access Grants</h3>
+            <div class="table-wrapper">
+                <table class="access-table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Product</th>
+                            <th>Type</th>
+                            <th>Granted At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for access in recent_access %}
+                        <tr>
+                            <td>{{ access.customer_email }}</td>
+                            <td>{{ access.product.title }}</td>
+                            <td><span class="badge badge-{{ access.access_type }}">{{ access.access_type | upper }}</span></td>
+                            <td>{{ access.granted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align:center; padding:20px;">No access grants yet</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

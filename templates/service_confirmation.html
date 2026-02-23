@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="service-header">
+    <h1>🎯 Service Request Confirmed</h1>
+</section>
+
+<section class="service-content">
+    <div class="container service-card">
+        <div class="service-success">
+            <div class="success-icon">✅</div>
+            <h2>{{ product.title }}</h2>
+            <p class="payment-status">Payment confirmed! Your request has been received.</p>
+        </div>
+
+        <div class="service-details">
+            <h3>Service Details</h3>
+            <p>{{ product.description }}</p>
+        </div>
+
+        <div class="confirmation-message">
+            <div class="message-card">
+                <h3>📋 What Happens Next?</h3>
+                <p>Our team has received your service request and will review it shortly. You can expect:</p>
+                <ul>
+                    <li>✉️ A confirmation email with project details</li>
+                    <li>📞 Contact from our team within 24 hours</li>
+                    <li>📅 Project timeline and next steps</li>
+                    <li>🤝 Dedicated support throughout delivery</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="order-reference">
+            <h3>Your Order Reference</h3>
+            <p>Keep this for your records:</p>
+            <div class="reference-box">
+                <code>Reference: {{ request.referrer.split('/')[-1] if request.referrer else 'N/A' }}</code>
+            </div>
+        </div>
+
+        <div class="support-section">
+            <h3>Need Help?</h3>
+            <p>Have questions about your service? <a href="/contact">Contact our support team</a></p>
+            <p style="font-size: 14px; opacity: 0.7; margin-top: 10px;">We typically respond within 2 hours during business hours.</p>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/" class="btn">Back to Home</a>
+            <a href="/services" class="btn">Explore More Services</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="error-section">
+    <div class="error-container">
+        <div class="error-code">500</div>
+        <h1>Internal Server Error</h1>
+        <p>Something went wrong on our end. Our team has been notified.</p>
+        
+        <div class="error-actions">
+            <a href="/" class="btn">Back to Home</a>
+            <a href="/contact" class="btn">Report Issue</a>
+        </div>
+
+        <div class="error-help">
+            <p>What you can try:</p>
+            <ul>
+                <li>Refresh the page</li>
+                <li><a href="/">Return to homepage</a></li>
+                <li><a href="/contact">Report this issue</a></li>
+                <li>Try again in a few moments</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
