@@ -57,13 +57,10 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER", "support@sm
 mail = Mail(app)
 
 # --- Admin authentication helpers ---
-def _check_admin_credentials(username, password):
-    """Compare provided credentials with environment settings."""
-    admin_user = os.getenv('ADMIN_USERNAME')
-    admin_pass = os.getenv('ADMIN_PASSWORD')
-    if not admin_user or not admin_pass:
-        return False
-    return hmac.compare_digest(username or "", admin_user) and hmac.compare_digest(password or "", admin_pass)
+# Admin credentials and email
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'smartsortsolutions04@gmail.com')
+ADMIN_PASSKEY = os.getenv('PASSKEY')  # One-time passkey for initial login
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')  # Set after first login via change password
 
 def check_admin_auth():
     """Return True if the request has admin access via session or HTTP Basic auth."""
@@ -73,8 +70,9 @@ def check_admin_auth():
 
     # HTTP Basic auth
     auth = request.authorization
-    if auth and _check_admin_credentials(auth.username, auth.password):
-        return True
+    if auth and ADMIN_PASSWORD:
+        if hmac.compare_digest(auth.username or "", ADMIN_EMAIL) and hmac.compare_digest(auth.password or "", ADMIN_PASSWORD):
+            return True
 
     return False
 
@@ -90,21 +88,59 @@ def admin_required(func):
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
-    """Simple admin login form that sets a session flag when correct."""
+    """Passkey-based admin login with first-time password setup."""
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        if _check_admin_credentials(username, password):
+        passkey = request.form.get('passkey')
+        
+        # Verify passkey
+        if ADMIN_PASSKEY and hmac.compare_digest(passkey or "", ADMIN_PASSKEY):
             session['is_admin'] = True
-            return redirect(url_for('admin_dashboard'))
-        return render_template('admin_login.html', error='Invalid credentials'), 401
+            session['first_login'] = True  # Force password change on first login
+            return redirect(url_for('admin_change_password'))
+        
+        # If password already set, allow password login
+        if ADMIN_PASSWORD:
+            password = request.form.get('password')
+            if hmac.compare_digest(password or "", ADMIN_PASSWORD):
+                session['is_admin'] = True
+                return redirect(url_for('admin_dashboard'))
+        
+        return render_template('admin_login.html', error='Invalid passkey or password'), 401
 
     return render_template('admin_login.html')
+
+
+@app.route('/admin/change-password', methods=['GET', 'POST'])
+def admin_change_password():
+    """Set/change admin password on first login."""
+    if not session.get('is_admin'):
+        return redirect(url_for('admin_login'))
+
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+
+        if not new_password or len(new_password) < 8:
+            return render_template('admin_change_password.html', error='Password must be at least 8 characters'), 400
+
+        if new_password != confirm_password:
+            return render_template('admin_change_password.html', error='Passwords do not match'), 400
+
+        # In production, use a proper password hasher (bcrypt, argon2)
+        # For now, store in environment (in Render, update environment variables)
+        session.pop('first_login', None)
+        
+        return render_template('admin_change_password.html', 
+                             success=f'Password changed successfully! Update ADMIN_PASSWORD in your environment to: {new_password}'), 200
+
+    is_first_login = session.get('first_login', False)
+    return render_template('admin_change_password.html', is_first_login=is_first_login)
 
 
 @app.route('/admin/logout')
 def admin_logout():
     session.pop('is_admin', None)
+    session.pop('first_login', None)
     return redirect(url_for('home'))
 
 

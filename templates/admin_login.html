@@ -1,21 +1,35 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section style="max-width:480px;margin:60px auto;padding:30px;border-radius:12px;background:rgba(2,6,23,0.6);">
-    <h2>Admin Login</h2>
+<section style="max-width:480px;margin:60px auto;padding:30px;border-radius:12px;background:rgba(2,6,23,0.6);border:2px solid rgba(14,165,233,0.3);">
+    <h2 style="text-align:center;color:#0ea5e9;">Admin Login</h2>
+    
     {% if error %}
-        <p style="color:#ffb4b4">{{ error }}</p>
+        <div style="background:#ffb4b4;color:#660000;padding:12px;border-radius:6px;margin-bottom:15px;">
+            <strong>❌ {{ error }}</strong>
+        </div>
     {% endif %}
+    
     <form method="post">
-        <div style="margin-bottom:12px;">
-            <label>Username</label>
-            <input type="text" name="username" required style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff">
+        <div style="margin-bottom:15px;">
+            <label style="display:block;margin-bottom:5px;font-weight:600;">Passkey</label>
+            <input type="password" name="passkey" placeholder="Enter your one-time passkey" required style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;box-sizing:border-box;">
+            <small style="opacity:0.6;display:block;margin-top:5px;">Use the passkey provided to you via email</small>
         </div>
-        <div style="margin-bottom:12px;">
-            <label>Password</label>
-            <input type="password" name="password" required style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff">
+
+        <div style="margin-bottom:15px;">
+            <label style="display:block;margin-bottom:5px;font-weight:600;">Password (after first login)</label>
+            <input type="password" name="password" placeholder="Enter password (if already set)" style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;box-sizing:border-box;">
+            <small style="opacity:0.6;display:block;margin-top:5px;">Leave blank if this is your first login</small>
         </div>
-        <button type="submit">Login</button>
+
+        <button type="submit" style="width:100%;padding:12px;background:#0ea5e9;color:white;border:none;border-radius:6px;font-weight:700;cursor:pointer;transition:all 0.3s ease;">Sign In</button>
     </form>
+
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:20px 0;">
+    
+    <p style="text-align:center;opacity:0.7;font-size:13px;">
+        <strong>Note:</strong> On first login with passkey, you'll be asked to set a permanent password.
+    </p>
 </section>
 {% endblock %}
