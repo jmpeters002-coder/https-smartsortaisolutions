@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect
+from flask import Flask, render_template, jsonify, request, redirect, session, Response, url_for
 from models import db, Product, Order, UserAccess
 import os
 import requests
@@ -9,6 +9,7 @@ from flask_mail import Mail, Message
 import logging
 from logging.handlers import RotatingFileHandler
 import secrets
+from functools import wraps
 
 load_dotenv()
 
@@ -54,6 +55,58 @@ app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER", "support@smartsort.ai")
 
 mail = Mail(app)
+
+# --- Admin authentication helpers ---
+def _check_admin_credentials(username, password):
+    """Compare provided credentials with environment settings."""
+    admin_user = os.getenv('ADMIN_USERNAME')
+    admin_pass = os.getenv('ADMIN_PASSWORD')
+    if not admin_user or not admin_pass:
+        return False
+    return hmac.compare_digest(username or "", admin_user) and hmac.compare_digest(password or "", admin_pass)
+
+def check_admin_auth():
+    """Return True if the request has admin access via session or HTTP Basic auth."""
+    # Session-based login
+    if session.get('is_admin'):
+        return True
+
+    # HTTP Basic auth
+    auth = request.authorization
+    if auth and _check_admin_credentials(auth.username, auth.password):
+        return True
+
+    return False
+
+def admin_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if check_admin_auth():
+            return func(*args, **kwargs)
+        # challenge for basic auth
+        return Response('Authentication required', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
+    return wrapper
+
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """Simple admin login form that sets a session flag when correct."""
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if _check_admin_credentials(username, password):
+            session['is_admin'] = True
+            return redirect(url_for('admin_dashboard'))
+        return render_template('admin_login.html', error='Invalid credentials'), 401
+
+    return render_template('admin_login.html')
+
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('is_admin', None)
+    return redirect(url_for('home'))
+
 
 # PHASE 5 — LOGGING CONFIGURATION
 # Setup rotating file logger for production
@@ -491,6 +544,7 @@ def my_access(email):
 # PHASE 3 — ADMIN DASHBOARD
 
 @app.route("/admin/dashboard")
+@admin_required
 def admin_dashboard():
     """
     Admin console for managing orders, revenue, and fulfillment.
@@ -553,7 +607,10 @@ def admin_dashboard():
     )
 
 
+
+
 @app.route("/admin/override/<int:order_id>", methods=["POST"])
+@admin_required
 def admin_override(order_id):
     """
     Manual fulfillment override.
