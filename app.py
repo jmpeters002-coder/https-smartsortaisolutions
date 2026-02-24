@@ -1,10 +1,13 @@
 from flask import Flask, render_template, jsonify, request, redirect, session, Response, url_for
-from models import db, Product, Order, UserAccess
+from models import db, Product, Order, UserAccess, User
 import os
 import requests
 from dotenv import load_dotenv
 import hmac
 import hashlib
+import json
+import re
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Mail, Message
 import logging
 from logging.handlers import RotatingFileHandler
@@ -38,6 +41,42 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JS access
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # CSRF protection
 app.config['PERMANENT_SESSION_LIFETIME'] = 2592000  # 30 days
 
+
+# --- Simple CSRF protection (token stored in session) ---
+def generate_csrf_token():
+    token = session.get('csrf_token')
+    if not token:
+        token = secrets.token_urlsafe(32)
+        session['csrf_token'] = token
+    return token
+
+
+def validate_csrf(token):
+    expected = session.get('csrf_token')
+    return expected and hmac.compare_digest(expected, token)
+
+
+# Make csrf_token available in Jinja templates
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
+
+
+@app.before_request
+def enforce_csrf_on_post():
+    # Skip safe methods
+    if request.method != 'POST':
+        return
+
+    # Exempt endpoints that are webhooks or external APIs
+    path = request.path or ''
+    csrf_exempt_prefixes = ['/webhook', '/api/', '/static']
+    if any(path.startswith(p) for p in csrf_exempt_prefixes):
+        return
+
+    # Check token either in header (X-CSRF-Token) or in form data
+    token = request.headers.get('X-CSRF-Token') or request.form.get('csrf_token')
+    if not token or not validate_csrf(token):
+        return Response('CSRF validation failed', status=400)
+
 # Paystack API Key
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
@@ -57,10 +96,47 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER", "support@sm
 mail = Mail(app)
 
 # --- Admin authentication helpers ---
-# Admin credentials and email
+# Admin credentials and email (login username/email comes from env)
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'smartsortsolutions04@gmail.com')
-ADMIN_PASSKEY = os.getenv('PASSKEY', 'peterngecu')  # Simple passkey for initial login
-ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')  # Set after first login via change password
+# Credentials file stored in instance folder (created if missing)
+CREDENTIALS_PATH = os.path.join(os.path.dirname(__file__), 'instance', 'admin_credentials.json')
+
+
+def load_credentials():
+    """Load admin credentials from instance JSON file."""
+    try:
+        if os.path.exists(CREDENTIALS_PATH):
+            with open(CREDENTIALS_PATH, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception:
+        return None
+    return None
+
+
+def save_credentials(login, password_hash):
+    """Save admin credentials to instance JSON file."""
+    data = {'login': login, 'password_hash': password_hash}
+    # Ensure instance directory exists
+    inst_dir = os.path.dirname(CREDENTIALS_PATH)
+    if not os.path.exists(inst_dir):
+        os.makedirs(inst_dir, exist_ok=True)
+    with open(CREDENTIALS_PATH, 'w', encoding='utf-8') as f:
+        json.dump(data, f)
+
+
+def is_strong_password(pw: str) -> bool:
+    """Basic strong-password check: min 8, upper, lower, digit, special."""
+    if not pw or len(pw) < 8:
+        return False
+    if not re.search(r'[a-z]', pw):
+        return False
+    if not re.search(r'[A-Z]', pw):
+        return False
+    if not re.search(r'\d', pw):
+        return False
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', pw):
+        return False
+    return True
 
 def check_admin_auth():
     """Return True if the request has admin access via session or HTTP Basic auth."""
@@ -68,11 +144,15 @@ def check_admin_auth():
     if session.get('is_admin'):
         return True
 
-    # HTTP Basic auth
+    # HTTP Basic auth using stored credentials
     auth = request.authorization
-    if auth and ADMIN_PASSWORD:
-        if hmac.compare_digest(auth.username or "", ADMIN_EMAIL) and hmac.compare_digest(auth.password or "", ADMIN_PASSWORD):
-            return True
+    creds = load_credentials()
+    if auth and creds:
+        stored_login = creds.get('login')
+        stored_hash = creds.get('password_hash')
+        if stored_login and stored_hash:
+            if hmac.compare_digest(auth.username or "", stored_login) and check_password_hash(stored_hash, auth.password or ""):
+                return True
 
     return False
 
@@ -88,30 +168,49 @@ def admin_required(func):
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
-    """Passkey-based admin login with first-time password setup."""
+    """Admin login using `login` (username/email) and `password`.
+
+    If credentials do not exist yet, allow initial setup when `login` matches
+    the configured `ADMIN_EMAIL` and the supplied password meets strength rules.
+    """
     if request.method == 'POST':
-        passkey = request.form.get('passkey', '').strip()
+        login = request.form.get('login', '').strip()
         password = request.form.get('password', '').strip()
-        
-        # Verify passkey first
-        if passkey and passkey == ADMIN_PASSKEY:
-            session['is_admin'] = True
-            session['first_login'] = True  # Force password change on first login
-            return redirect(url_for('admin_change_password'))
-        
-        # If password already set, allow password login
-        if password and ADMIN_PASSWORD and password == ADMIN_PASSWORD:
+
+        if not login or not password:
+            return render_template('admin_login.html', error='Provide login and password'), 400
+
+        creds = load_credentials()
+
+        # If credentials exist, validate
+        if creds:
+            stored_login = creds.get('login')
+            stored_hash = creds.get('password_hash')
+            if stored_login and stored_hash and hmac.compare_digest(login, stored_login) and check_password_hash(stored_hash, password):
+                session['is_admin'] = True
+                return redirect(url_for('admin_dashboard'))
+            return render_template('admin_login.html', error='Invalid login or password'), 401
+
+        # No credentials yet — allow initial setup only for configured ADMIN_EMAIL
+        if login == ADMIN_EMAIL:
+            if not is_strong_password(password):
+                return render_template('admin_login.html', error='Password must be at least 8 chars and include upper, lower, number, and special char'), 400
+            pw_hash = generate_password_hash(password)
+            save_credentials(login, pw_hash)
             session['is_admin'] = True
             return redirect(url_for('admin_dashboard'))
-        
-        return render_template('admin_login.html', error='Invalid passkey or password'), 401
+
+        return render_template('admin_login.html', error='Invalid login or password'), 401
 
     return render_template('admin_login.html')
 
 
 @app.route('/admin/change-password', methods=['GET', 'POST'])
 def admin_change_password():
-    """Set/change admin password on first login."""
+    """Allow logged-in admin to change their password.
+
+    Requires current session `is_admin`.
+    """
     if not session.get('is_admin'):
         return redirect(url_for('admin_login'))
 
@@ -119,21 +218,19 @@ def admin_change_password():
         new_password = request.form.get('new_password', '').strip()
         confirm_password = request.form.get('confirm_password', '').strip()
 
-        if not new_password or len(new_password) < 6:
-            return render_template('admin_change_password.html', error='Password must be at least 6 characters'), 400
-
         if new_password != confirm_password:
             return render_template('admin_change_password.html', error='Passwords do not match'), 400
 
-        # Store password in session (will need to manually add to env vars on Render)
-        session.pop('first_login', None)
-        
-        return render_template('admin_change_password.html', 
-                             password_set=new_password,
-                             success=f'Password set successfully!'), 200
+        if not is_strong_password(new_password):
+            return render_template('admin_change_password.html', error='Password must be at least 8 chars and include upper, lower, number, and special char'), 400
 
-    is_first_login = session.get('first_login', False)
-    return render_template('admin_change_password.html', is_first_login=is_first_login)
+        # Persist new password hash for current admin login
+        creds = load_credentials() or {'login': ADMIN_EMAIL}
+        save_credentials(creds.get('login', ADMIN_EMAIL), generate_password_hash(new_password))
+
+        return render_template('admin_change_password.html', success='Password set successfully!'), 200
+
+    return render_template('admin_change_password.html')
 
 
 @app.route('/admin/logout')
@@ -228,10 +325,14 @@ def contact():
 
 @app.route("/create-order/<int:product_id>", methods=["POST"])
 def create_order(product_id):
-    email = request.form.get("email")
+    email = (request.form.get("email") or '').strip()
     custom_amount = request.form.get("amount")
 
     product = Product.query.get_or_404(product_id)
+
+    # Basic email validation
+    if not email or not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+        return "Invalid email address", 400
 
     # Validate custom amount
     try:
@@ -318,8 +419,12 @@ def access_product(reference):
     """
     order = Order.query.filter_by(payment_reference=reference).first()
 
-    if not order or order.status != "paid":
-        return "Access denied. Payment not confirmed.", 403
+    if not order:
+        return "Access denied. Order not found.", 404
+
+    # If payment not yet confirmed, render a polling page that waits for confirmation.
+    if order.status != "paid":
+        return render_template("payment_pending.html", reference=reference)
 
     product = order.product
 
@@ -330,6 +435,16 @@ def access_product(reference):
         return render_template("service_confirmation.html", product=product, order=order)
 
     return "Invalid product type", 400
+
+
+
+@app.route('/api/order-status/<reference>')
+def api_order_status(reference):
+    """Return JSON status for a given payment reference."""
+    order = Order.query.filter_by(payment_reference=reference).first()
+    if not order:
+        return jsonify({'status': 'not_found'}), 404
+    return jsonify({'status': order.status}), 200
 @app.route("/api/products")
 def api_products():
     products = Product.query.all()
@@ -649,6 +764,60 @@ def admin_dashboard():
         revenue_by_status=revenue_by_status,
         recent_access=recent_access
     )
+
+
+@app.route("/admin/dashboard-data")
+@admin_required
+def admin_dashboard_data():
+    """Return JSON data for dashboard (orders + stats) to support realtime UI updates."""
+    all_orders = Order.query.order_by(Order.created_at.desc()).all()
+
+    orders_payload = [
+        {
+            'id': o.id,
+            'customer_email': o.customer_email,
+            'product_title': o.product.title if o.product else None,
+            'price': o.product.price if o.product else 0,
+            'status': o.status,
+            'payment_reference': o.payment_reference,
+            'created_at': o.created_at.isoformat()
+        }
+        for o in all_orders
+    ]
+
+    total_orders = len(all_orders)
+    paid_orders = len([o for o in all_orders if o.status == 'paid'])
+    pending_orders = len([o for o in all_orders if o.status == 'pending'])
+    total_revenue = sum(o.product.price for o in all_orders if o.status == 'paid')
+
+    revenue_by_type = {}
+    revenue_by_status = {}
+    for o in all_orders:
+        if o.status == 'paid' and o.product:
+            revenue_by_type[o.product.product_type] = revenue_by_type.get(o.product.product_type, 0) + o.product.price
+        revenue_by_status[o.status] = revenue_by_status.get(o.status, 0) + (o.product.price if o.product else 0)
+
+    recent_access = UserAccess.query.order_by(UserAccess.granted_at.desc()).limit(10).all()
+    recent_access_payload = [
+        {
+            'email': a.customer_email,
+            'product_title': a.product.title if a.product else None,
+            'type': a.access_type,
+            'granted_at': a.granted_at.isoformat()
+        }
+        for a in recent_access
+    ]
+
+    return jsonify({
+        'orders': orders_payload,
+        'total_orders': total_orders,
+        'paid_orders': paid_orders,
+        'pending_orders': pending_orders,
+        'total_revenue': total_revenue,
+        'revenue_by_type': revenue_by_type,
+        'revenue_by_status': revenue_by_status,
+        'recent_access': recent_access_payload
+    })
 
 
 

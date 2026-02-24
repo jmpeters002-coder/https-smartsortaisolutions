@@ -62,3 +62,36 @@ class UserAccess(db.Model):
 
     def __repr__(self):
         return f"<UserAccess {self.customer_email} → {self.product_id}>"
+
+
+class User(db.Model):
+    """Application user / admin model.
+
+    Passwords are stored as a secure hash. Use the provided helpers
+    `set_password` and `check_password` to manage credentials.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    login = db.Column(db.String(120), unique=True, nullable=False, index=True)  # email or username
+    password_hash = db.Column(db.String(255), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def set_password(self, password, hash_func=None):
+        """Set password using provided hash function (werkzeug by default)."""
+        # Delayed import to avoid circular imports in some contexts
+        try:
+            from werkzeug.security import generate_password_hash
+            self.password_hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
+        except Exception:
+            # Fallback naive assignment (should not happen in practice)
+            self.password_hash = password
+
+    def check_password(self, password):
+        try:
+            from werkzeug.security import check_password_hash
+            return check_password_hash(self.password_hash, password)
+        except Exception:
+            return False
+
+    def __repr__(self):
+        return f"<User {self.login} {'(admin)' if self.is_admin else ''}>"

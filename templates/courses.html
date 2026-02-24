@@ -29,6 +29,7 @@
         <span class="close" onclick="closeEnrollModal()">&times;</span>
         <h2>Enroll Now</h2>
         <form method="POST" id="enrollForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" id="productId" name="product_id">
             
             <div class="form-group">

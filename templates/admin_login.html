@@ -11,16 +11,16 @@
     {% endif %}
     
     <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div style="margin-bottom:15px;">
-            <label style="display:block;margin-bottom:5px;font-weight:600;">Passkey</label>
-            <input type="password" name="passkey" placeholder="Enter your one-time passkey" required style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;box-sizing:border-box;">
-            <small style="opacity:0.6;display:block;margin-top:5px;">Use the passkey provided to you via email</small>
+            <label style="display:block;margin-bottom:5px;font-weight:600;">Username or Email</label>
+            <input type="text" name="login" placeholder="admin@yourdomain.com" required style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;box-sizing:border-box;">
         </div>
 
         <div style="margin-bottom:15px;">
-            <label style="display:block;margin-bottom:5px;font-weight:600;">Password (after first login)</label>
-            <input type="password" name="password" placeholder="Enter password (if already set)" style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;box-sizing:border-box;">
-            <small style="opacity:0.6;display:block;margin-top:5px;">Leave blank if this is your first login</small>
+            <label style="display:block;margin-bottom:5px;font-weight:600;">Password</label>
+            <input type="password" name="password" placeholder="Enter your password" required style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;box-sizing:border-box;">
+            <small style="opacity:0.6;display:block;margin-top:5px;">Password must be at least 8 characters and include upper/lower/digit/special</small>
         </div>
 
         <button type="submit" style="width:100%;padding:12px;background:#0ea5e9;color:white;border:none;border-radius:6px;font-weight:700;cursor:pointer;transition:all 0.3s ease;">Sign In</button>

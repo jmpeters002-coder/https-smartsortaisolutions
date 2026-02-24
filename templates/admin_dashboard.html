@@ -13,19 +13,19 @@
         <!-- STATS CARDS -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value">{{ total_orders }}</div>
+                <div class="stat-value" id="total_orders_val">{{ total_orders }}</div>
                 <div class="stat-label">Total Orders</div>
             </div>
             <div class="stat-card paid">
-                <div class="stat-value">{{ paid_orders }}</div>
+                <div class="stat-value" id="paid_orders_val">{{ paid_orders }}</div>
                 <div class="stat-label">Paid Orders</div>
             </div>
             <div class="stat-card pending">
-                <div class="stat-value">{{ pending_orders }}</div>
+                <div class="stat-value" id="pending_orders_val">{{ pending_orders }}</div>
                 <div class="stat-label">Pending Orders</div>
             </div>
             <div class="stat-card revenue">
-                <div class="stat-value">${{ total_revenue | round(2) }}</div>
+                <div class="stat-value" id="total_revenue_val">${{ total_revenue | round(2) }}</div>
                 <div class="stat-label">Total Revenue</div>
             </div>
         </div>
@@ -62,7 +62,7 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="orders-tbody">
                         {% for order in orders %}
                         <tr class="order-row status-{{ order.status }}">
                             <td>#{{ order.id }}</td>
@@ -78,6 +78,7 @@
                             <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                             <td>
                                 <form method="post" action="/admin/override/{{ order.id }}" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit" class="action-btn override-btn" 
                                         {% if order.status == 'paid' %}disabled{% endif %}>
                                         ✓ Fulfill
@@ -154,4 +155,65 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+// CSRF token for JS-generated forms
+const CSRF_TOKEN = "{{ csrf_token() }}";
+// Poll dashboard-data every 5 seconds and update table/stats
+const refreshInterval = 5000;
+
+async function fetchDashboardData() {
+    try {
+        const res = await fetch('/admin/dashboard-data');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        // Update stats
+        document.getElementById('total_orders_val').textContent = data.total_orders;
+        document.getElementById('paid_orders_val').textContent = data.paid_orders;
+        document.getElementById('pending_orders_val').textContent = data.pending_orders;
+        document.getElementById('total_revenue_val').textContent = '$' + (Math.round((data.total_revenue + Number.EPSILON) * 100) / 100).toFixed(2);
+
+        // Update orders table
+        const tbody = document.getElementById('orders-tbody');
+        if (!tbody) return;
+        const orders = data.orders || [];
+        if (orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">No orders found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = orders.map(o => {
+            const paymentRef = o.payment_reference ? o.payment_reference.substring(0,20) : '—';
+            const created = new Date(o.created_at).toLocaleString();
+            const disableBtn = o.status === 'paid' ? 'disabled' : '';
+            return `
+                <tr class="order-row status-${o.status}">
+                    <td>#${o.id}</td>
+                    <td>${o.customer_email}</td>
+                    <td>${o.product_title || ''}</td>
+                    <td>$${o.price}</td>
+                    <td><span class="status-badge status-${o.status}">${o.status.toUpperCase()}</span></td>
+                    <td>${paymentRef}</td>
+                    <td>${created}</td>
+                    <td>
+                        <form method="post" action="/admin/override/${o.id}" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="${CSRF_TOKEN}">
+                            <button type="submit" class="action-btn override-btn" ${disableBtn}>✓ Fulfill</button>
+                        </form>
+                    </td>
+                </tr>`;
+        }).join('');
+
+    } catch (e) {
+        console.warn('Dashboard refresh failed', e);
+    }
+}
+
+setInterval(fetchDashboardData, refreshInterval);
+// Initial load
+fetchDashboardData();
+</script>
 {% endblock %}
