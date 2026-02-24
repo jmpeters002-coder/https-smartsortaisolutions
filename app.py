@@ -277,26 +277,26 @@ with app.app_context():
         products = [
             Product(
                 title="AI Foundations Mastery",
-                description="Learn AI fundamentals, machine learning basics, and automation concepts.",
-                price=3.4,
+                description="Learn AI fundamentals, machine learning basics, neural networks, and automation concepts. Master predictive modeling and AI application development.",
+                price=1250,
                 product_type="course"
             ),
             Product(
                 title="Full-Stack Web Development Bootcamp",
-                description="Master HTML, CSS, JavaScript, Python and backend systems.",
-                price=3.4,
+                description="Master HTML, CSS, JavaScript, Python, Django/Flask, and backend systems. Build production-ready applications with modern architecture patterns.",
+                price=1850,
                 product_type="course"
             ),
             Product(
                 title="AI Automation for Businesses",
-                description="Automate workflows and improve business efficiency using Python.",
-                price=129,
+                description="Automate workflows and improve business efficiency using Python, APIs, and intelligent automation. Learn to create solutions that scale.",
+                price=2150,
                 product_type="course"
             ),
             Product(
                 title="Website Development & Maintenance Service",
-                description="Professional website design and ongoing maintenance for businesses.",
-                price=199,
+                description="Professional website design, development, and ongoing maintenance for businesses. Custom solutions tailored to your brand and goals.",
+                price=3200,
                 product_type="service"
             )
         ]
