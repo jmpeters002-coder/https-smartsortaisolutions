@@ -13,7 +13,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import secrets
 from functools import wraps
-
+from flask import Response
 load_dotenv()
 
 # Configure static folder path
@@ -885,7 +885,31 @@ def after_request(response):
     response.headers['X-XSS-Protection'] = '1; mode=block'
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     return response
+from flask import Response
 
+@app.route('/sitemap.xml')
+def sitemap():
+    pages = []
+    base_url = "https://https-smartsortaisolutions.onrender.com"
+
+    pages.append(base_url + "/")
+    pages.append(base_url + "/services")
+    pages.append(base_url + "/courses")
+
+    sitemap_xml = """<?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    """
+
+    for page in pages:
+        sitemap_xml += f"""
+        <url>
+            <loc>{page}</loc>
+        </url>
+        """
+
+    sitemap_xml += "</urlset>"
+
+    return Response(sitemap_xml, mimetype='application/xml')
 
 # Run server
 if __name__ == "__main__":
