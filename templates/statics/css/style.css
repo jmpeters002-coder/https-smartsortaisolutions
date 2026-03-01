@@ -1370,5 +1370,46 @@ button:hover {
 
     .modal-content h2 {
         font-size: 24px;
-    }
+    }.blog-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    padding: 50px 20px;
+}
+
+.blog-card {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 28px;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+}
+
+.blog-card h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+.blog-card p {
+    color: #555;
+    line-height: 1.7;
+    font-size: 15px;
+}
+
+.read-more-btn {
+    display: inline-block;
+    margin-top: 18px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #0066ff;
+    transition: 0.3s;
+}
+
+.read-more-btn:hover {
+    text-decoration: underline;
 }
