@@ -1,17 +1,58 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<h1>Blog</h1>
-<p>Latest articles, tutorials, and updates from SmartSort AI.</p>
 
-<article>
-    <h2>Welcome to our blog</h2>
-    <p>This space will contain posts about AI, product updates, and learning resources.</p>
-    <p><em>More posts coming soon.</em></p>
-</article>
-<div class="blog-card">
-  <h3>How AI Is Changing Business in 2026</h3>
-  <p>Short preview text...</p>
-  <a href="{{ url_for('blog_ai_career_usa') }}">Read More</a>
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">SmartSort AI Blog</h1>
+        <p class="text-muted">
+            Insights, tutorials, and career guides in AI, software development, and digital innovation.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Blog Card 1 -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h4 class="card-title">Top AI Careers in the USA (2026)</h4>
+                    <p class="card-text text-muted">
+                        Explore salary ranges, required skills, and job demand shaping the US AI industry.
+                    </p>
+                    <div class="mt-auto">
+                        <a href="{{ url_for('blog_details', slug='ai-careers-usa') }}" 
+                           class="btn btn-primary">
+                           Read More →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Card 2 -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h4 class="card-title">
+                        Top 3 Programming Languages for Web Development in 2026
+                    </h4>
+                    <p class="card-text text-muted">
+                        Discover the most in-demand languages powering modern web and AI-driven applications.
+                    </p>
+                    <div class="mt-auto">
+                        <a href="{{ url_for('blog_details', slug='top-3-languages') }}" 
+                           class="btn btn-primary">
+                           Read More →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
+
 {% endblock %}

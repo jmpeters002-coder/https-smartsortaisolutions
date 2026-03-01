@@ -14,6 +14,7 @@ from logging.handlers import RotatingFileHandler
 import secrets
 from functools import wraps
 from flask import Response
+from services.blog_service import load_posts, get_post
 load_dotenv()
 
 # Configure static folder path
@@ -930,10 +931,32 @@ def free_resources():
 @app.route("/terms-and-conditions")
 def terms_conditions():
     return render_template("terms_and_conditions.html")
+blog_posts = {
+    "ai-careers-usa": {
+        "title": "AI Careers in USA",
+        "excerpt": "Explore salary ranges, required skills, and job demand in the US AI market.",
+        "content": "Full blog content goes here..."
+    },
+    "top-3-languages": {
+        "title": "Top 3 Programming Languages",
+        "excerpt": "Discover the most in-demand languages for modern web development.",
+        "content": "Full blog content goes here..."
+    }
+}
 @app.route("/blog")
 def blog():
-    return render_template("blog.html")
-# Run server
+    posts = load_posts()
+    return render_template("blog.html", posts=posts)
+
+@app.route("/blog/<slug>")
+def blog_details(slug):
+    post = get_post(slug)
+
+    if not post:
+        return "Post not found", 404
+
+    return render_template("blog_details.html", post=post)
+
 if __name__ == "__main__":
     # Production: use gunicorn instead
     # gunicorn -w 4 -b 0.0.0.0:5000 app:app
