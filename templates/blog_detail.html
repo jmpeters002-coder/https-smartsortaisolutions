@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | SmartSort AI{% endblock %}
+
+{% block content %}
+
+<section class="blog-article">
+
+    <h1 style="font-size:42px; margin-bottom:12px;">
+        {{ post.title }}
+    </h1>
+
+    <p class="blog-meta" style="margin-bottom:40px;">
+        {{ post.date }}
+    </p>
+
+    <article style="font-size:18px; line-height:1.8;">
+        {{ post.content | safe }}
+    </article>
+
+    <div class="blog-cta">
+
+        <h3>Ready to Build AI Skills?</h3>
+
+        <p>
+            Explore practical AI programs designed for real-world career success.
+        </p>
+
+        <a href="/courses">
+            View Programs →
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}
