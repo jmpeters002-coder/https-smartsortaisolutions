@@ -910,9 +910,29 @@ def sitemap():
     sitemap_xml += "</urlset>"
 
     return Response(sitemap_xml, mimetype='application/xml')
-@app.route("/blog/ai-career-usa")
-def blog_ai_career_usa():
-    return render_template("blog_ai_career_usa.html")
+@app.route("/news")
+def news():
+    return render_template("news.html")
+@app.route("/about")
+def about():
+    return render_template("about.html")
+@app.route("/refund-policy")
+def refund_policy():
+    return render_template("refund_policy.html")
+@app.route("/privacy-policy")
+def privacy_policy():
+    return render_template("privacy_policy.html")
+
+@app.route("/free-resources")
+def free_resources():
+    return render_template("free_resources.html")
+
+@app.route("/terms-and-conditions")
+def terms_conditions():
+    return render_template("terms_and_conditions.html")
+@app.route("/blog")
+def blog():
+    return render_template("blog.html")
 # Run server
 if __name__ == "__main__":
     # Production: use gunicorn instead
