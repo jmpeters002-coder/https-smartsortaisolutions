@@ -910,7 +910,9 @@ def sitemap():
     sitemap_xml += "</urlset>"
 
     return Response(sitemap_xml, mimetype='application/xml')
-
+@app.route("/blog/ai-career-usa")
+def blog_ai_career_usa():
+    return render_template("blog_ai_career_usa.html")
 # Run server
 if __name__ == "__main__":
     # Production: use gunicorn instead
