@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://https-smartsortaisolutions.onrender.com/</loc>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://https-smartsortaisolutions.onrender.com/about</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://https-smartsortaisolutions.onrender.com/blog</loc>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://https-smartsortaisolutions.onrender.com/news</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://https-smartsortaisolutions.onrender.com/free-resources</loc>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://https-smartsortaisolutions.onrender.com/privacy-policy</loc>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>https://https-smartsortaisolutions.onrender.com/terms-and-conditions</loc>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>https://https-smartsortaisolutions.onrender.com/refund-policy</loc>
+    <priority>0.4</priority>
+  </url>
+
+</urlset>
