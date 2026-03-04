@@ -1,103 +1,94 @@
 {% extends "base.html" %}
+
+{% block title %}Services | SmartSort AI Solutions{% endblock %}
+
 {% block content %}
 
-<section class="services-header">
-    <h1>Our Services</h1>
-    <p>Transform your business with bespoke AI and technology solutions tailored to your unique needs. SmartSort doesn't do one-size-fits-all; we partner with organizations to understand their challenges, envision possibilities, and deliver cutting-edge solutions that drive measurable impact. From web development and mobile applications to AI implementation and digital transformation consulting, we're your trusted partner in the digital revolution.</p>
+<section class="services-hero text-center">
+    <h1>Digital Solutions That Scale</h1>
+    <p>We build intelligent systems, automate business workflows, and integrate AI solutions that drive growth.</p>
 </section>
 
-<section class="services-container">
-    <div class="container cards">
-        {% for product in products %}
-        <div class="card">
-            <h3>{{ product.title }}</h3>
-            <p>{{ product.description }}</p>
-            <div class="price-tag">${{ product.price }}</div>
-            <button class="enroll-btn" data-id="{{ product.id }}" data-title="{{ product.title|e }}" data-price="{{ product.price }}">Request Service</button>
-        </div>
-        {% endfor %}
-    </div>
-</section>
+<section class="services-grid">
 
-<!-- Service Request Modal -->
-<div id="enrollModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeEnrollModal()">&times;</span>
-        <h2>Request Service</h2>
-        <form method="POST" id="enrollForm">
-            <input type="hidden" id="productId" name="product_id">
-            
-            <div class="form-group">
-                <label for="email">Email Address:</label>
-                <input type="email" id="email" name="email" required placeholder="Enter your email">
-            </div>
+```
+<!-- Web Development -->
+<div class="service-card">
+    <h2>🌐 Web Development</h2>
+    <p>
+        Professional websites and web applications built with modern technologies.
+        From landing pages to full-stack systems tailored for businesses and individuals.
+    </p>
 
-            <div class="form-group">
-                <label>Service: <span id="courseName"></span></label>
-                <label>Suggested Cost: KES <span id="coursePrice"></span></label>
-            </div>
+    <ul>
+        <li>Custom Business Websites</li>
+        <li>Full-Stack Web Applications</li>
+        <li>E-Commerce Platforms</li>
+        <li>Performance Optimization</li>
+    </ul>
 
-            <div class="form-group">
-                <label for="customAmount">Enter Payment Amount (KES):</label>
-                <input type="number" id="customAmount" name="amount" step="0.01" min="0.01" required placeholder="Enter amount" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff">
-                <small style="opacity:0.7">You can pay any amount - the suggested price is a recommendation</small>
-            </div>
-
-            <button type="submit" class="btn">Proceed to Payment</button>
-        </form>
-    </div>
+    <a href="/contact" class="service-btn">Start Your Project</a>
 </div>
 
-<script>
-function showEnrollModal(productId, productTitle, productPrice) {
-    document.getElementById('productId').value = productId;
-    document.getElementById('courseName').textContent = productTitle;
-    document.getElementById('coursePrice').textContent = productPrice;
-    document.getElementById('enrollModal').style.display = 'block';
-}
+<!-- Automation -->
+<div class="service-card">
+    <h2>⚙️ Business Automation</h2>
+    <p>
+        Reduce repetitive tasks and improve efficiency through workflow automation
+        and smart integrations.
+    </p>
 
-function closeEnrollModal() {
-    document.getElementById('enrollModal').style.display = 'none';
-}
+    <ul>
+        <li>Process Automation</li>
+        <li>CRM & API Integrations</li>
+        <li>Data Processing Systems</li>
+        <li>Internal Tools Development</li>
+    </ul>
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Service enroll script loaded');
+    <a href="/contact" class="service-btn">Automate Now</a>
+</div>
 
-    // Attach handlers to all enroll buttons (safe: uses data-attributes)
-    var buttons = document.querySelectorAll('.enroll-btn');
-    if (buttons.length === 0) {
-        console.warn('No enroll buttons found on services page');
-    }
-    buttons.forEach(function(btn){
-        btn.addEventListener('click', function(){
-            const id = this.dataset.id;
-            const title = this.dataset.title;
-            const price = this.dataset.price;
-            showEnrollModal(id, title, price);
-        });
-    });
+<!-- AI & API Integration -->
+<div class="service-card">
+    <h2>🤖 AI & API Integrations</h2>
+    <p>
+        Integrate AI into your business using modern APIs and machine intelligence tools.
+    </p>
 
-    var enrollForm = document.getElementById('enrollForm');
-    if (enrollForm) {
-        enrollForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const productId = document.getElementById('productId').value;
-            const form = this;
-            form.action = '/create-order/' + productId;
-            form.submit();
-        });
-    } else {
-        console.warn('enrollForm not found on services page');
-    }
+    <ul>
+        <li>AI Chatbots</li>
+        <li>OpenAI & API Integrations</li>
+        <li>Recommendation Systems</li>
+        <li>Data Intelligence Solutions</li>
+    </ul>
 
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const modal = document.getElementById('enrollModal');
-        if (event.target == modal) {
-            modal.style.display = 'none';
-        }
-    }
-});
-</script>
+    <a href="/contact" class="service-btn">Integrate AI</a>
+</div>
+
+<!-- Tech Education -->
+<div class="service-card">
+    <h2>📚 Tech Education & Courses</h2>
+    <p>
+        Learn modern web development, backend systems, automation and AI technologies.
+    </p>
+
+    <ul>
+        <li>Programming Courses</li>
+        <li>Frontend & Backend Training</li>
+        <li>Practical Project-Based Learning</li>
+        <li>Career Guidance</li>
+    </ul>
+
+    <a href="/courses" class="service-btn">Explore Courses</a>
+</div>
+```
+
+</section>
+
+<section class="cta-section text-center">
+    <h2>Ready to Build or Scale Your Digital Systems?</h2>
+    <p>Let’s turn your ideas into scalable, intelligent solutions.</p>
+    <a href="/contact" class="cta-btn">Contact SmartSort</a>
+</section>
 
 {% endblock %}

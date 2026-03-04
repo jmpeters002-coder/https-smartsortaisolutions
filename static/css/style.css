@@ -1413,3 +1413,130 @@ button:hover {
 .read-more-btn:hover {
     text-decoration: underline;
 }
+/* GLOBAL BACKGROUND */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #f1f5f9;
+}
+
+/* NAVBAR */
+.main-navbar {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo a {
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.logo span {
+    color: #38bdf8;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #e2e8f0;
+    transition: 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #38bdf8;
+}
+
+.contact-btn {
+    background: #38bdf8;
+    padding: 8px 14px;
+    border-radius: 6px;
+    color: #0f172a !important;
+    font-weight: 600;
+}
+
+.admin-link {
+    color: #facc15 !important;
+    font-weight: 600;
+}
+
+/* CONTENT WRAPPER */
+.main-content {
+    padding: 60px 0;
+}
+
+.content-wrapper {
+    width: 90%;
+    margin: auto;
+}
+
+/* FLASH */
+.flash-message {
+    background: #1e40af;
+    padding: 12px;
+    margin: 10px auto;
+    width: 90%;
+    border-radius: 6px;
+    text-align: center;
+}
+
+/* FOOTER */
+.main-footer {
+    background: #0f172a;
+    padding: 40px 0 20px;
+    margin-top: 60px;
+}
+
+.footer-container {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.footer-column h4,
+.footer-column h5 {
+    margin-bottom: 10px;
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-column a {
+    color: #94a3b8;
+    text-decoration: none;
+}
+
+.footer-column a:hover {
+    color: #38bdf8;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    color: #64748b;
+}
