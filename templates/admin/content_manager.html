@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<h2>📚 Content Management Panel</h2>
+
+<hr>
+
+<h3>📝 Blogs</h3>
+
+<table class="table">
+
+<thead>
+<tr>
+<th>Title</th>
+<th>Slug</th>
+<th>Created</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for blog in blogs %}
+<tr>
+
+<td>{{ blog.title }}</td>
+<td>{{ blog.slug }}</td>
+<td>{{ blog.created_at.strftime('%Y-%m-%d') }}</td>
+
+<td>
+
+<form method="post"
+      action="{{ url_for('admin_bp.delete_blog', blog_id=blog.id) }}">
+
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+<button class="btn btn-danger btn-sm">
+Delete
+</button>
+
+</form>
+
+</td>
+
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+<hr>
+
+<h3>📰 News</h3>
+
+<table class="table">
+
+<thead>
+<tr>
+<th>Title</th>
+<th>Slug</th>
+<th>Created</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for news in news_list %}
+<tr>
+
+<td>{{ news.title }}</td>
+<td>{{ news.slug }}</td>
+<td>{{ news.created_at.strftime('%Y-%m-%d') }}</td>
+
+<td>
+
+<form method="post"
+      action="{{ url_for('admin_bp.delete_news', news_id=news.id) }}">
+
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+<button class="btn btn-danger btn-sm">
+Delete
+</button>
+
+</form>
+
+</td>
+
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

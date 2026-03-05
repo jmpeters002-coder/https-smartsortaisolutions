@@ -62,21 +62,6 @@ class UserAccess(db.Model):
 
     def __repr__(self):
         return f"<UserAccess {self.customer_email} → {self.product_id}>"
-class News(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-
-    title = db.Column(db.String(250), nullable=False)
-    slug = db.Column(db.String(250), unique=True, nullable=False)
-
-    summary = db.Column(db.Text)
-    content = db.Column(db.Text)
-
-    source_name = db.Column(db.String(150))
-    source_link = db.Column(db.String(500))
-
-    image_filename = db.Column(db.String(255))
-
-    post_type = db.Column(db.String(20), nullable=False, default="news")
 
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     """Application user / admin model.
@@ -112,29 +97,42 @@ class News(db.Model):
     
 
 import re
+
 class Blog(db.Model):
     __tablename__ = "blogs"
 
     id = db.Column(db.Integer, primary_key=True)
 
-    title = db.Column(db.String(255), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
 
-    slug = db.Column(db.String(255), unique=True, nullable=False)
+    slug = db.Column(db.String(200), unique=True, nullable=False)
 
-    excerpt = db.Column(db.Text)
+    summary = db.Column(db.Text, nullable=False)
 
     content = db.Column(db.Text, nullable=False)
 
-    category = db.Column(db.String(100))
-
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def generate_slug(self):
-        if not self.slug:
-            slug = self.title.lower()
-            slug = re.sub(r'[^a-z0-9\s-]', '', slug)
-            slug = re.sub(r'\s+', '-', slug)
-            self.slug = slug
+    def __repr__(self):
+        return f"<Blog {self.title}>"
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    
+class News(db.Model):
+    __tablename__ = "news"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(200), nullable=False)
+
+    slug = db.Column(db.String(200), unique=True, nullable=False)
+
+    summary = db.Column(db.Text, nullable=False)
+
+    content = db.Column(db.Text, nullable=False)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<News {self.title}>"

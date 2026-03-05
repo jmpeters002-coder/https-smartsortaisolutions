@@ -4,33 +4,17 @@
 
 {% block content %}
 
-<section class="blog-article">
+<section class="container mt-5">
 
-    <h1 style="font-size:42px; margin-bottom:12px;">
-        {{ post.title }}
-    </h1>
+    <h1>{{ post.title }}</h1>
 
-    <p class="blog-meta" style="margin-bottom:40px;">
-        {{ post.date }}
-    </p>
+<p class="text-muted">
+{{ post.created_at.strftime('%B %d, %Y') }}
+</p>
 
-    <article style="font-size:18px; line-height:1.8;">
-        {{ post.content | safe }}
-    </article>
-
-    <div class="blog-cta">
-
-        <h3>Ready to Build AI Skills?</h3>
-
-        <p>
-            Explore practical AI programs designed for real-world career success.
-        </p>
-
-        <a href="/courses">
-            View Programs →
-        </a>
-
-    </div>
+<article>
+{{ post.content | safe }}
+</article>
 
 </section>
 

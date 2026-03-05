@@ -233,5 +233,98 @@ def admin_login():
             return redirect(url_for("admin_bp.admin_dashboard"))
 
         return render_template("admin_login.html", error="Invalid credentials")
-
     return render_template("admin_login.html")
+    
+
+from flask import request, redirect, url_for, flash
+from models import Blog, News
+from extensions import db
+
+
+@admin_bp.route("/admin/blog/create", methods=["GET", "POST"])
+def create_blog():
+
+    if request.method == "POST":
+        title = request.form.get("title")
+        summary = request.form.get("summary")
+        content = request.form.get("content")
+
+        slug = generate_slug(title)
+
+        new_post = Blog(
+            title=title,
+            slug=slug,
+            summary=summary,
+            content=content
+        )
+
+        db.session.add(new_post)
+        db.session.commit()
+
+        flash("Blog created successfully!", "success")
+        return redirect(url_for("admin_bp.admin_dashboard"))
+
+    return render_template("admin/create_blog.html")
+@admin_bp.route("/admin/news/create", methods=["GET", "POST"])
+def create_news():
+
+    if request.method == "POST":
+        title = request.form.get("title")
+        summary = request.form.get("summary")
+        content = request.form.get("content")
+
+        slug = generate_slug(title)
+
+        new_news = News(
+            title=title,
+            slug=slug,
+            summary=summary,
+            content=content
+        )
+
+        db.session.add(new_news)
+        db.session.commit()
+
+        flash("News created successfully!", "success")
+        return redirect(url_for("admin_bp.admin_dashboard"))
+
+    return render_template("admin/create_news.html")
+import re
+
+def generate_slug(title):
+    slug = title.lower()
+    slug = re.sub(r'[^a-z0-9]+', '-', slug)
+    slug = slug.strip('-')
+    return slug
+@admin_bp.route("/content")
+@admin_required
+def content_manager():
+
+    blogs = Blog.query.order_by(Blog.created_at.desc()).all()
+    news_list = News.query.order_by(News.created_at.desc()).all()
+
+    return render_template(
+        "admin/content_manager.html",
+        blogs=blogs,
+        news_list=news_list
+    )
+@admin_bp.route("/blog/delete/<int:blog_id>", methods=["POST"])
+@admin_required
+def delete_blog(blog_id):
+
+    blog = Blog.query.get_or_404(blog_id)
+
+    db.session.delete(blog)
+    db.session.commit()
+
+    return redirect(url_for("admin_bp.content_manager"))
+@admin_bp.route("/news/delete/<int:news_id>", methods=["POST"])
+@admin_required
+def delete_news(news_id):
+
+    news = News.query.get_or_404(news_id)
+
+    db.session.delete(news)
+    db.session.commit()
+
+    return redirect(url_for("admin_bp.content_manager"))
