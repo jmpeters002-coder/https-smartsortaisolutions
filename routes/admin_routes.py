@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template, request, redirect, url_for
+from flask import Blueprint, current_app, jsonify, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
 
@@ -7,6 +7,8 @@ from models import News, Order, UserAccess
 from utils.auth import admin_required
 from services.fulfillment import fulfill_order
 from flask import request, session
+import markdown
+import bleach
 
 admin_bp = Blueprint("admin_bp", __name__, url_prefix="/admin")
 
@@ -248,14 +250,15 @@ def create_blog():
         title = request.form.get("title")
         summary = request.form.get("summary")
         content = request.form.get("content")
-
+        status = request.form.get("status", "draft")
         slug = generate_slug(title)
 
         new_post = Blog(
             title=title,
             slug=slug,
             summary=summary,
-            content=content
+            content=content,   
+            status=status
         )
 
         db.session.add(new_post)
@@ -272,14 +275,15 @@ def create_news():
         title = request.form.get("title")
         summary = request.form.get("summary")
         content = request.form.get("content")
-
+        status = request.form.get("status", "draft")
         slug = generate_slug(title)
 
         new_news = News(
             title=title,
             slug=slug,
             summary=summary,
-            content=content
+            content=content,
+            status=status
         )
 
         db.session.add(new_news)
@@ -328,3 +332,6 @@ def delete_news(news_id):
     db.session.commit()
 
     return redirect(url_for("admin_bp.content_manager"))
+
+
+

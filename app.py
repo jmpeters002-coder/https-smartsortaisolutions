@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, current_app
 from extensions import db
 from flask_mail import Mail
 import os
@@ -6,8 +6,11 @@ from flask import session
 import secrets
 
 app = Flask(__name__)
-
-app.config.from_object("config.Config")
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "SmartSortFallbackSecretKey2026"
+)
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres:mnipn2026@localhost/smartsort_db"
 
 from extensions import db
 db.init_app(app)
@@ -39,6 +42,8 @@ def generate_csrf_token():
 @app.context_processor
 def inject_csrf_token():
     return dict(csrf_token=generate_csrf_token)
+    
+app.config["UPLOAD_FOLDER"] = "static/uploads/news"
 
 if __name__ == "__main__":
     app.run()
