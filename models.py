@@ -119,20 +119,23 @@ class Blog(db.Model):
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
-class News(db.Model):
-    __tablename__ = "news"
 
+class News(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     title = db.Column(db.String(200), nullable=False)
 
-    slug = db.Column(db.String(200), unique=True, nullable=False)
-
-    summary = db.Column(db.Text, nullable=False)
+    slug = db.Column(db.String(200), unique=True)
+    
+    summary = db.Column(db.Text)
 
     content = db.Column(db.Text, nullable=False)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    image = db.Column(db.String(300))
 
-    def __repr__(self):
-        return f"<News {self.title}>"
+    meta_title = db.Column(db.String(160))
+    meta_description = db.Column(db.String(255))
+
+    status = db.Column(db.String(20), default="draft")
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

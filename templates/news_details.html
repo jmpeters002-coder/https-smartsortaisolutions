@@ -7,7 +7,9 @@
     <p style="color:gray;">{{ article.created_at.strftime('%B %d, %Y') }}</p>
 
     <hr>
-
+{% if post.image %}
+<img src="{{ url_for('static', filename='uploads/news/' + post.image) }}">
+{% endif %}
     <p>{{ article.content }}</p>
 
     {% if article.source_link %}
