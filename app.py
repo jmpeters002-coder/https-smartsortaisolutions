@@ -42,6 +42,14 @@ def generate_csrf_token():
 @app.context_processor
 def inject_csrf_token():
     return dict(csrf_token=generate_csrf_token)
+
+
+uri = os.getenv("DATABASE_URL")
+
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = uri
     
 app.config["UPLOAD_FOLDER"] = "static/uploads/news"
 
