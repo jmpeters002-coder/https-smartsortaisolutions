@@ -1,8 +1,10 @@
 import os
 
+
 class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
+
 
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.getenv(
@@ -10,5 +12,13 @@ class DevelopmentConfig(Config):
         "postgresql://postgres:password@localhost:5432/smartsort_db"
     )
 
+
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+
+    database_url = os.getenv("DATABASE_URL")
+
+    # Fix Render postgres:// issue
+    if database_url and database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+    SQLALCHEMY_DATABASE_URI = database_url
