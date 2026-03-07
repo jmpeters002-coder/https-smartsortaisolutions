@@ -1,9 +1,11 @@
-from flask import Flask, session
-from flask_mail import Mail
-from extensions import db
 import os
 import secrets
+from flask import Flask, session
+from flask_mail import Mail
 from dotenv import load_dotenv
+
+from extensions import db
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -12,10 +14,13 @@ app = Flask(__name__)
 # DATABASE CONFIGURATION
 # =============================
 
+database_url = os.getenv(
+    "DATABASE_URL",
+    "postgresql://postgres:password@localhost:5432/smartsort_db"
+)
 
-database_url = os.getenv("DATABASE_URL")
-
-if database_url and database_url.startswith("postgres://"):
+# Fix Render postgres:// bug
+if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
@@ -28,6 +33,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = "static/uploads/news"
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
 
+# Ensure upload folder exists
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
 # =============================
 # INITIALIZE EXTENSIONS
 # =============================
@@ -35,9 +43,13 @@ app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
 db.init_app(app)
 mail = Mail(app)
 
+# =============================
+# CREATE DATABASE TABLES
+# =============================
+
 with app.app_context():
-    from models import Blog, News, Order, UserAccess
     db.create_all()
+
 # =============================
 # REGISTER BLUEPRINTS
 # =============================
@@ -62,13 +74,14 @@ register_blueprints()
 # =============================
 
 def generate_csrf_token():
-    token = session.get('csrf_token')
+    token = session.get("csrf_token")
 
     if not token:
         token = secrets.token_urlsafe(32)
-        session['csrf_token'] = token
+        session["csrf_token"] = token
 
     return token
+
 
 @app.context_processor
 def inject_csrf_token():
@@ -79,5 +92,4 @@ def inject_csrf_token():
 # =============================
 
 if __name__ == "__main__":
-    app.run()
-
+    app.run(debug=True)
