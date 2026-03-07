@@ -38,6 +38,9 @@ app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
 db.init_app(app)
 mail = Mail(app)
 
+with app.app_context():
+    db.create_all()
+
 # =============================
 # REGISTER BLUEPRINTS
 # =============================
