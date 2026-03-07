@@ -1,23 +1,48 @@
-from flask import Flask, current_app
-from extensions import db
+```python
+from flask import Flask, session
 from flask_mail import Mail
+from extensions import db
 import os
-from flask import session
 import secrets
 
 app = Flask(__name__)
-app.secret_key = os.environ.get(
-    "SECRET_KEY",
-    "SmartSortFallbackSecretKey2026"
-)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres:mnipn2026@localhost/smartsort_db"
 
-from extensions import db
+# =============================
+# DATABASE CONFIGURATION
+# =============================
+
+database_url = os.getenv("DATABASE_URL")
+
+if database_url:
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+else:
+    # fallback for local development
+    database_url = "sqlite:///smartsort.db"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True
+}
+
+# =============================
+# OTHER APP CONFIG
+# =============================
+
+app.config["UPLOAD_FOLDER"] = "static/uploads/news"
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
+
+# =============================
+# INITIALIZE EXTENSIONS
+# =============================
+
 db.init_app(app)
-
 mail = Mail(app)
 
-# Import blueprints
+# =============================
+# REGISTER BLUEPRINTS
+# =============================
+
 def register_blueprints():
     from routes.public_routes import public_bp
     from routes.blog_routes import blog_bp
@@ -30,7 +55,13 @@ def register_blueprints():
     app.register_blueprint(order_bp)
     app.register_blueprint(payment_bp)
     app.register_blueprint(admin_bp)
+
 register_blueprints()
+
+# =============================
+# CSRF TOKEN GENERATOR
+# =============================
+
 def generate_csrf_token():
     token = session.get('csrf_token')
 
@@ -39,19 +70,15 @@ def generate_csrf_token():
         session['csrf_token'] = token
 
     return token
+
 @app.context_processor
 def inject_csrf_token():
     return dict(csrf_token=generate_csrf_token)
 
-
-uri = os.getenv("DATABASE_URL")
-
-if uri and uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
-
-app.config["SQLALCHEMY_DATABASE_URI"] = uri
-    
-app.config["UPLOAD_FOLDER"] = "static/uploads/news"
+# =============================
+# RUN LOCALLY
+# =============================
 
 if __name__ == "__main__":
     app.run()
+
