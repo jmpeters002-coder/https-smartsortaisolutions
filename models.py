@@ -20,6 +20,8 @@ class Product(db.Model):
 
 
 class Order(db.Model):
+    __tablename__ = "orders"
+
     id = db.Column(db.Integer, primary_key=True)
 
     customer_email = db.Column(db.String(120), nullable=False)
@@ -42,6 +44,7 @@ class UserAccess(db.Model):
     Auto-granted when payment is confirmed.
     Prevents duplicate access grants.
     """
+    __tablename__ = "user_access"
     id = db.Column(db.Integer, primary_key=True)
 
     customer_email = db.Column(db.String(120), nullable=False)
@@ -50,7 +53,7 @@ class UserAccess(db.Model):
 
     product = db.relationship('Product')
 
-    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
 
     access_type = db.Column(db.String(50))
     # course | service
@@ -105,7 +108,7 @@ class Blog(db.Model):
 
     title = db.Column(db.String(200), nullable=False)
 
-    slug = db.Column(db.String(200), unique=True, nullable=False)
+    slug = db.Column(db.String(200), unique=True, nullable=False, index=True)
 
     summary = db.Column(db.Text, nullable=False)
 
@@ -125,7 +128,7 @@ class News(db.Model):
 
     title = db.Column(db.String(200), nullable=False)
 
-    slug = db.Column(db.String(200), unique=True)
+    slug = db.Column(db.String(200), unique=True, nullable=False, index=True)
     
     summary = db.Column(db.Text)
 
@@ -136,6 +139,6 @@ class News(db.Model):
     meta_title = db.Column(db.String(160))
     meta_description = db.Column(db.String(255))
 
-    status = db.Column(db.String(20), default="draft")
+    status = db.Column(db.String(20), default="draft", index=True)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

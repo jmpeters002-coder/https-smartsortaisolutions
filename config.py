@@ -1,11 +1,14 @@
 import os
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "dev_key")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = os.getenv("SECRET_KEY")
 
+class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL",
-        "sqlite:///database.db"
+        "postgresql://postgres:password@localhost:5432/smartsort_db"
     )
 
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")

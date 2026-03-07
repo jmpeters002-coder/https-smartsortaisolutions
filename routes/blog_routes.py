@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template
 from models import Blog
+from services.blog_service import create_blog
+from flask import request
 
 blog_bp = Blueprint("blog_bp", __name__, url_prefix="/blog")
 
@@ -8,11 +10,12 @@ blog_bp = Blueprint("blog_bp", __name__, url_prefix="/blog")
 @blog_bp.route("/")
 def blog_home():
 
-    posts = Blog.query.order_by(
-        Blog.created_at.desc()
-    ).all()
+   page = request.args.get("page", 1, type=int)
 
-    return render_template("blog.html", posts=posts)
+   posts = Blog.query.filter_by(status="published")\
+    .order_by(Blog.created_at.desc())\
+    .all()
+   return render_template("blog.html", posts=posts)
 
 # Blog detail page
 @blog_bp.route("/<slug>")

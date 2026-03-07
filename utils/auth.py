@@ -51,12 +51,16 @@ def check_admin_auth():
 
     return False
 from functools import wraps
-from flask import request, Response, session    
-def admin_required(func):
-    @wraps(func)
+from flask import session, redirect, url_for
+
+def admin_required(f):
+
+    @wraps(f)
     def wrapper(*args, **kwargs):
-        if check_admin_auth():
-            return func(*args, **kwargs)
-        # challenge for basic auth
-        return Response('Authentication required', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+        if not session.get("is_admin"):
+            return redirect(url_for("admin_bp.admin_login"))
+
+        return f(*args, **kwargs)
+
     return wrapper
