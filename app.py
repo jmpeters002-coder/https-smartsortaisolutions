@@ -1,4 +1,3 @@
-```python
 from flask import Flask, session
 from flask_mail import Mail
 from extensions import db
