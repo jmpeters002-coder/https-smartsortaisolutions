@@ -1,5 +1,5 @@
 from alembic.util import status
-from flask import Blueprint, render_template, request
+from flask import Blueprint, app, render_template, request
 from models import News
 from routes.admin_routes import generate_slug
 
@@ -8,6 +8,7 @@ news_bp = Blueprint("news_bp", __name__, url_prefix="/news")
 @public_bp.route("/news")
 def news_page():
 
+    app.logger.info("News page visited")
     posts = News.query.filter(
     News.status == "published"
     ).order_by(
@@ -51,6 +52,8 @@ def news_post(slug):
 
 @news_bp.route("/blog")
 def blog():
+    app.logger.info("Blog page visited")
+
     articles = News.query.filter_by(post_type="blog")\
         .order_by(News.created_at.desc()).all()
 

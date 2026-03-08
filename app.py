@@ -1,14 +1,54 @@
 import os
 import secrets
-from flask import Flask, session
+import logging
+from logging.handlers import RotatingFileHandler
+
+from flask import Flask, session, request
 from flask_mail import Mail
 from dotenv import load_dotenv
 
-from extensions import db
+from extensions import db, migrate
+
+# =============================
+# LOAD ENV VARIABLES
+# =============================
 
 load_dotenv()
 
+# =============================
+# CREATE FLASK APP
+# =============================
+
 app = Flask(__name__)
+
+# =============================
+# LOGGING CONFIGURATION
+# =============================
+
+if not os.path.exists("logs"):
+    os.mkdir("logs")
+
+file_handler = RotatingFileHandler(
+    "logs/smartsort.log", maxBytes=10240, backupCount=10
+)
+
+file_handler.setFormatter(logging.Formatter(
+    "%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"
+))
+
+file_handler.setLevel(logging.INFO)
+
+app.logger.addHandler(file_handler)
+app.logger.setLevel(logging.INFO)
+
+app.logger.info("SmartSort AI startup")
+werkzeug_logger = logging.getLogger("werkzeug")
+werkzeug_logger.setLevel(logging.INFO)
+werkzeug_logger.addHandler(file_handler)    
+
+streamhandler = logging.StreamHandler()
+streamhandler.setLevel(logging.INFO)
+app.logger.addHandler(streamhandler)    
 
 # =============================
 # DATABASE CONFIGURATION
@@ -19,7 +59,7 @@ database_url = os.getenv(
     "postgresql://postgres:password@localhost:5432/smartsort_db"
 )
 
-# Fix Render postgres:// bug
+# Fix Render postgres bug
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
@@ -30,11 +70,11 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # OTHER APP CONFIG
 # =============================
 
+app.secret_key = os.getenv("SECRET_KEY")
+
 app.config["UPLOAD_FOLDER"] = "static/uploads/news"
-app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
 
 # Ensure upload folder exists
-os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 # =============================
 # INITIALIZE EXTENSIONS
@@ -42,13 +82,12 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 db.init_app(app)
 mail = Mail(app)
+migrate.init_app(app, db)
 
 # =============================
 # CREATE DATABASE TABLES
 # =============================
 
-with app.app_context():
-    db.create_all()
 
 # =============================
 # REGISTER BLUEPRINTS
@@ -88,8 +127,24 @@ def inject_csrf_token():
     return dict(csrf_token=generate_csrf_token)
 
 # =============================
-# RUN LOCALLY
+# REQUEST LOGGER
 # =============================
 
+@app.before_request
+def log_request():
+    app.logger.info(
+        f"{request.method} {request.path} from{request.path}")
+
+# =============================
+# RUN APP
+# =============================
+print("server running at http://127.0.0.1:5000")
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host="127.0.0.1", 
+        port=5000, 
+        debug=True,
+        use_reloader=False
+        
+        )

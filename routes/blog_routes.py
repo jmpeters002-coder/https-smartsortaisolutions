@@ -1,26 +1,27 @@
-from flask import Blueprint, render_template
-from models import Blog
-from services.blog_service import create_blog
-from flask import request
+from flask import Blueprint, render_template, current_app
+from models.blog import Blog
 
-blog_bp = Blueprint("blog_bp", __name__, url_prefix="/blog")
+blog_bp = Blueprint("blog", __name__)
 
-
-# Blog listing page
-@blog_bp.route("/")
+# BLOG LIST PAGE
+@blog_bp.route("/blog/")
 def blog_home():
 
-   page = request.args.get("page", 1, type=int)
+    current_app.logger.info("Blog page visited")
 
-   posts = Blog.query.filter_by(status="published")\
-    .order_by(Blog.created_at.desc())\
-    .all()
-   return render_template("blog.html", posts=posts)
+    posts = Blog.query.filter_by(status="published") \
+                      .order_by(Blog.created_at.desc()) \
+                      .all()
 
-# Blog detail page
-@blog_bp.route("/<slug>")
+    return render_template("blog/index.html", posts=posts)
+
+
+# SINGLE ARTICLE PAGE
+@blog_bp.route("/blog/<slug>")
 def blog_post(slug):
 
-    post = Blog.query.filter_by(slug=slug).first_or_404()
+    current_app.logger.info(f"Blog post viewed: {slug}")
 
-    return render_template("blog_details.html", post=post)
+    post = Blog.query.filter_by(slug=slug, status="published").first_or_404()
+
+    return render_template("blog/post.html", post=post)
