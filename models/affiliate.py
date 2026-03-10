@@ -40,7 +40,7 @@ class AffiliateReferral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     affiliate_id = db.Column(db.Integer, db.ForeignKey("affiliate_partners.id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    order_id = db.Column(db.Integer, db.ForeignKey("order.id"))
+    order_id = db.Column(db.Integer, db.ForeignKey("orders.id"))
     commission_amount = db.Column(db.Float, default=0.0)
     status = db.Column(db.String(20), default="pending")  # pending, completed, paid
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
