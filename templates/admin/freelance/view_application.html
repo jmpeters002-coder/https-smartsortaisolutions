@@ -1,0 +1,88 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ application.name }} - Freelance Application{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{{ application.name }}</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <span class="badge bg-{{ 'warning' if application.status == 'pending' else 'success' if application.status == 'approved' else 'danger' }}">
+                {{ application.status|upper }}
+            </span>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Application Details</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Name:</dt>
+                        <dd class="col-sm-9">{{ application.name }}</dd>
+                        
+                        <dt class="col-sm-3">Email:</dt>
+                        <dd class="col-sm-9">
+                            <a href="mailto:{{ application.email }}">{{ application.email }}</a>
+                        </dd>
+                        
+                        <dt class="col-sm-3">Country:</dt>
+                        <dd class="col-sm-9">{{ application.country or 'Not provided' }}</dd>
+                        
+                        <dt class="col-sm-3">Portfolio:</dt>
+                        <dd class="col-sm-9">
+                            {% if application.portfolio %}
+                                <a href="{{ application.portfolio }}" target="_blank">View Portfolio</a>
+                            {% else %}
+                                Not provided
+                            {% endif %}
+                        </dd>
+                        
+                        <dt class="col-sm-3">Applied:</dt>
+                        <dd class="col-sm-9">{{ application.created_at.strftime('%B %d, %Y at %H:%M') }}</dd>
+                    </dl>
+                </div>
+            </div>
+            
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Skills & Experience</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ application.skills }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('freelance_bp.update_status', app_id=application.id) }}" class="mb-3">
+                        <div class="mb-2">
+                            <select name="status" class="form-select">
+                                <option value="pending" {% if application.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="approved" {% if application.status == 'approved' %}selected{% endif %}>Approve</option>
+                                <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Reject</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Update Status</button>
+                    </form>
+                    
+                    <form method="POST" action="{{ url_for('freelance_bp.delete_application', app_id=application.id) }}" 
+                          onsubmit="return confirm('Delete this application?');">
+                        <button type="submit" class="btn btn-danger w-100">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

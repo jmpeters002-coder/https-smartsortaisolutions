@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Subscriptions - SmartSort AI{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group mb-4">
+                <a href="{{ url_for('user_dashboard_bp.dashboard') }}" class="list-group-item list-group-item-action">
+                    📊 Dashboard
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.my_courses') }}" class="list-group-item list-group-item-action">
+                    📚 My Courses
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.saved_resources') }}" class="list-group-item list-group-item-action">
+                    💾 Saved Resources
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.manage_subscriptions') }}" class="list-group-item list-group-item-action active">
+                    📧 Subscriptions
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.account_settings') }}" class="list-group-item list-group-item-action">
+                    ⚙️ Settings
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <h1>Manage Subscriptions</h1>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Newsletter</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Get weekly updates on AI jobs, news, and resources.</p>
+                    {% if is_newsletter_subscriber %}
+                        <span class="badge bg-success mb-2">✓ Subscribed</span>
+                        <button class="btn btn-danger ms-2" onclick="toggleNewsletter()">Unsubscribe</button>
+                    {% else %}
+                        <span class="badge bg-secondary mb-2">✗ Not subscribed</span>
+                        <button class="btn btn-success ms-2" onclick="toggleNewsletter()">Subscribe</button>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if subscriptions %}
+                <div class="mt-4">
+                    <h5>Active Subscriptions</h5>
+                    {% for sub in subscriptions %}
+                        <div class="card mt-2">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ sub.subscription_type|title }}</h6>
+                                        <small class="text-muted">
+                                            Started: {{ sub.started_at.strftime('%b %d, %Y') }}
+                                            {% if sub.expires_at %}
+                                                · Expires: {{ sub.expires_at.strftime('%b %d, %Y') }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="cancelSubscription({{ sub.id }})">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleNewsletter() {
+    fetch('/dashboard/subscriptions/newsletter/toggle', {method: 'POST'})
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload();
+        })
+        .catch(err => alert('Error: ' + err));
+}
+
+function cancelSubscription(subId) {
+    if (confirm('Are you sure you want to cancel this subscription?')) {
+        fetch('/dashboard/subscriptions/' + subId + '/cancel', {method: 'POST'})
+            .then(() => location.reload())
+            .catch(err => alert('Error: ' + err));
+    }
+}
+</script>
+{% endblock %}

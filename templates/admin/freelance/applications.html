@@ -1,0 +1,74 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Freelance Applications - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Freelance Applications</h1>
+    
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-0">Filter by Status</h5>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="{{ url_for('freelance_bp.manage_applications', status='pending') }}" 
+                       class="btn btn-sm btn-warning">Pending</a>
+                    <a href="{{ url_for('freelance_bp.manage_applications', status='approved') }}" 
+                       class="btn btn-sm btn-success">Approved</a>
+                    <a href="{{ url_for('freelance_bp.manage_applications', status='rejected') }}" 
+                       class="btn btn-sm btn-danger">Rejected</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search by name or email..." 
+                           value="{{ request.args.get('search', '') }}">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+            
+            {% if applications %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Country</th>
+                                <th>Status</th>
+                                <th>Applied</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in applications %}
+                                <tr>
+                                    <td>{{ app.name }}</td>
+                                    <td>{{ app.email }}</td>
+                                    <td>{{ app.country or 'N/A' }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'warning' if app.status == 'pending' else 'success' if app.status == 'approved' else 'danger' }}">
+                                            {{ app.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ app.created_at.strftime('%b %d, %Y') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('freelance_bp.view_application', app_id=app.id) }}" 
+                                           class="btn btn-sm btn-info">View</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">No applications found.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

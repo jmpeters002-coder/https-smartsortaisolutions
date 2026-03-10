@@ -94,14 +94,35 @@ migrate.init_app(app, db)
 # =============================
 
 def register_blueprints():
+    # Existing blueprints
     from routes.public_routes import public_bp
     from routes.order_routes import order_bp
     from routes.payment_routes import payment_bp
     from routes.admin_routes import admin_bp
+    from routes.blog_routes import blog_bp
+    from routes.news_routes import news_bp
+    
+    # New blueprints
+    from routes.newsletter_routes import newsletter_bp
+    from routes.freelance_routes import freelance_bp
+    from routes.affiliate_routes import affiliate_bp
+    from routes.job_routes import job_bp
+    from routes.user_dashboard_routes import user_dashboard_bp
+    from routes.courses_management_routes import courses_bp
+    
+    # Register all blueprints
     app.register_blueprint(public_bp)
     app.register_blueprint(order_bp)
     app.register_blueprint(payment_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(blog_bp, url_prefix="/blog")
+    app.register_blueprint(news_bp)
+    app.register_blueprint(newsletter_bp)
+    app.register_blueprint(freelance_bp)
+    app.register_blueprint(affiliate_bp)
+    app.register_blueprint(job_bp)
+    app.register_blueprint(user_dashboard_bp)
+    app.register_blueprint(courses_bp)
 
 register_blueprints()
 

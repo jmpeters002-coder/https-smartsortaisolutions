@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard - SmartSort AI{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3">
+            <div class="list-group mb-4">
+                <a href="{{ url_for('user_dashboard_bp.dashboard') }}" class="list-group-item list-group-item-action active">
+                    📊 Dashboard
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.my_courses') }}" class="list-group-item list-group-item-action">
+                    📚 My Courses
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.saved_resources') }}" class="list-group-item list-group-item-action">
+                    💾 Saved Resources
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.manage_subscriptions') }}" class="list-group-item list-group-item-action">
+                    📧 Subscriptions
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.account_settings') }}" class="list-group-item list-group-item-action">
+                    ⚙️ Settings
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <h1>Welcome, {{ user.login }}!</h1>
+            
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">📚 Courses</h5>
+                            <h2>{{ stats.courses_enrolled }}</h2>
+                            <a href="{{ url_for('user_dashboard_bp.my_courses') }}" class="btn btn-sm btn-primary">View Courses</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">💾 Saved Items</h5>
+                            <h2>{{ stats.saved_resources }}</h2>
+                            <a href="{{ url_for('user_dashboard_bp.saved_resources') }}" class="btn btn-sm btn-primary">View Saved</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">📧 Subscriptions</h5>
+                            <h2>{{ stats.active_subscriptions }}</h2>
+                            <a href="{{ url_for('user_dashboard_bp.manage_subscriptions') }}" class="btn btn-sm btn-primary">Manage</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="/jobs/" class="btn btn-outline-primary me-2">Browse AI Jobs</a>
+                    <a href="/courses" class="btn btn-outline-primary me-2">Explore Courses</a>
+                    <a href="/blog" class="btn btn-outline-primary me-2">Read Blog</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -4,12 +4,13 @@ from extensions import db
 from models import User, Order, UserAccess
 from models.content import Content
 from utils.auth import admin_required
+from utils.decorators import rate_limit, login_rate_limit
 from services.fulfillment import fulfill_order
 import os, re, time
 from utils.slug import generate_slug
 
 
-admin_bp = Blueprint("admin_bp", __name__, url_prefix="/admin")
+admin_bp = Blueprint("admin_bp", __name__, url_prefix="/control-panel")
 
 # -------------------------------
 # Helpers
@@ -42,6 +43,7 @@ def get_content_stats():
 # Admin Login
 # -------------------------------
 @admin_bp.route("/login", methods=["GET", "POST"])
+@login_rate_limit(max_attempts=5, window_seconds=900)
 def admin_login():
     if request.method == "POST":
         login = request.form.get("login")

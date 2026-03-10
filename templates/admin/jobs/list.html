@@ -1,0 +1,109 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Jobs Management - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>AI Jobs Management</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('job_bp.create_job') }}" class="btn btn-primary">
+                ➕ Create New Job
+            </a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-6">
+                    <form method="GET" class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search jobs..." 
+                               value="{{ request.args.get('search', '') }}">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </form>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="{{ url_for('job_bp.admin_jobs_list') }}" class="btn btn-sm btn-secondary">All</a>
+                    <a href="{{ url_for('job_bp.admin_jobs_list', status='draft') }}" class="btn btn-sm btn-warning">Draft</a>
+                    <a href="{{ url_for('job_bp.admin_jobs_list', status='published') }}" class="btn btn-sm btn-success">Published</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            {% if jobs.items %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Company</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in jobs.items %}
+                                <tr>
+                                    <td>{{ job.title }}</td>
+                                    <td>{{ job.company }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ job.job_type }}</span>
+                                        {% if job.remote %}<span class="badge bg-success">Remote</span>{% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'warning' if job.status == 'draft' else 'success' }}">
+                                            {{ job.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ job.created_at.strftime('%b %d, %Y') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('job_bp.edit_job', job_id=job.id) }}" 
+                                           class="btn btn-sm btn-info">Edit</a>
+                                        <form method="POST" action="{{ url_for('job_bp.delete_job', job_id=job.id) }}" 
+                                              style="display:inline;" onsubmit="return confirm('Delete this job?');">
+                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if jobs.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ jobs.prev_num }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for page_num in jobs.iter_pages() %}
+                            {% if page_num %}
+                                <li class="page-item {% if page_num == jobs.page %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if jobs.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ jobs.next_num }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% else %}
+                <div class="alert alert-info">No jobs found.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
