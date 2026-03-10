@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}My Courses - SmartSort AI{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group mb-4">
+                <a href="{{ url_for('user_dashboard_bp.dashboard') }}" class="list-group-item list-group-item-action">
+                    📊 Dashboard
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.my_courses') }}" class="list-group-item list-group-item-action active">
+                    📚 My Courses
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.saved_resources') }}" class="list-group-item list-group-item-action">
+                    💾 Saved Resources
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.manage_subscriptions') }}" class="list-group-item list-group-item-action">
+                    📧 Subscriptions
+                </a>
+                <a href="{{ url_for('user_dashboard_bp.account_settings') }}" class="list-group-item list-group-item-action">
+                    ⚙️ Settings
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <h1>My Courses</h1>
+            
+            {% if courses %}
+                <div class="row mt-4">
+                    {% for course in courses %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Course {{ course.course_id }}</h5>
+                                    <p class="card-text text-muted">Modules: {{ course.modules_completed }}</p>
+                                    
+                                    <div class="mb-3">
+                                        <small class="text-muted">Progress</small>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" role="progressbar" 
+                                                 style="width: {{ course.progress_percentage }}%" 
+                                                 aria-valuenow="{{ course.progress_percentage }}" 
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                                {{ course.progress_percentage }}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="small text-muted">
+                                        Last accessed: {{ course.last_accessed.strftime('%b %d, %Y') }}
+                                    </p>
+                                    
+                                    <a href="{{ url_for('user_dashboard_bp.course_progress', course_id=course.course_id) }}" 
+                                       class="btn btn-sm btn-primary">
+                                        View Course
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info mt-4">
+                    You haven't enrolled in any courses yet. 
+                    <a href="/courses">Browse courses</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

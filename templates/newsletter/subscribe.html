@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Subscribe to Newsletter - SmartSort AI{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Join Our Newsletter</h2>
+                    <p class="text-muted mb-4">Get weekly updates on AI jobs, news, and resources.</p>
+                    
+                    <form method="POST" class="newsletter-form" id="newsletterForm">
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required placeholder="your.email@example.com">
+                            <small class="form-text text-muted">We'll never share your email.</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Subscribe</button>
+                    </form>
+                    
+                    <div id="successMessage" class="alert alert-success mt-3" style="display:none;">
+                        ✓ Successfully subscribed!
+                    </div>
+                    <div id="errorMessage" class="alert alert-danger mt-3" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('newsletterForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    
+    const response = await fetch('/newsletter/subscribe', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'email=' + encodeURIComponent(email)
+    });
+    
+    const data = response.json();
+    if (response.ok) {
+        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById('newsletterForm').reset();
+    } else {
+        document.getElementById('errorMessage').innerText = (await data).error;
+        document.getElementById('errorMessage').style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

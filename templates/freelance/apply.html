@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Apply for Freelance Opportunities - SmartSort AI{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Freelance Application</h2>
+                    <p class="text-muted mb-4">Tell us about yourself and your skills. We'll review your application and get back to you soon.</p>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else category }}" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" class="freelance-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" required minlength="2">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="country" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="country" name="country">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="portfolio" class="form-label">Portfolio/Website URL</label>
+                                <input type="url" class="form-control" id="portfolio" name="portfolio" placeholder="https://your-portfolio.com">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="skills" class="form-label">Skills & Experience *</label>
+                            <textarea class="form-control" id="skills" name="skills" rows="5" required minlength="10" placeholder="Tell us about your skills, experience, and why you're interested in freelance opportunities..."></textarea>
+                            <small class="text-muted">Minimum 10 characters</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Submit Application</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

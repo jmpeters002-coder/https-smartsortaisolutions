@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Affiliate Program - SmartSort AI{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Apply to Our Affiliate Program</h2>
+                    <p class="text-muted mb-4">
+                        Join our affiliate program and earn commissions by promoting SmartSort AI courses and services.
+                    </p>
+                    
+                    <div class="alert alert-info mb-4">
+                        <strong>Program Benefits:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Attractive commission rates</li>
+                            <li>Marketing materials provided</li>
+                            <li>Dedicated affiliate dashboard</li>
+                            <li>Real-time tracking</li>
+                        </ul>
+                    </div>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else category }}" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" class="affiliate-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" required minlength="2">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="country" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="country" name="country">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="website" class="form-label">Website/Social Media URL *</label>
+                                <input type="url" class="form-control" id="website" name="website" required placeholder="https://your-website.com">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms" name="agree_terms" required>
+                            <label class="form-check-label" for="agreeTerms">
+                                I agree to the affiliate program terms and conditions
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Join Affiliate Program</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
