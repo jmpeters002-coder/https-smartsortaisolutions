@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 style="text-align:center; margin-top:20px;">Latest AI News</h1>
+
+<div style="max-width:900px;margin:auto;margin-top:30px;">
+    {% for article in articles %}
+    <div style="background:white;padding:25px;margin-bottom:25px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.08);">
+        {% if article.image %}
+        <img src="{{ url_for('static', filename='uploads/news/' + article.image) }}" class="img-fluid mb-3" alt="{{ article.title }}">
+        {% endif %}
+
+        <h3>
+            <a href="{{ url_for('public_bp.news_post', slug=article.slug) }}">{{ article.title }}</a>
+        </h3>
+
+        <p>{{ article.summary }}</p>
+
+        <a href="{{ url_for('public_bp.news_post', slug=article.slug) }}">Read More →</a>
+    </div>
+    {% else %}
+    <p>No news articles available yet. Subscribe to our newsletter to stay updated.</p>
+    {% endfor %}
+</div>
+{% endblock %}

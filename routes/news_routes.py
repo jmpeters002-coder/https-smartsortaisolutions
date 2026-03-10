@@ -1,60 +1,41 @@
-from alembic.util import status
-from flask import Blueprint, app, render_template, request
-from models import News
-from routes.admin_routes import generate_slug
+from flask import Blueprint, render_template, current_app
+from models.content import Content
 
 news_bp = Blueprint("news_bp", __name__, url_prefix="/news")
 
-@public_bp.route("/news")
-def news_page():
 
-    app.logger.info("News page visited")
-    posts = News.query.filter(
-    News.status == "published"
-    ).order_by(
-    News.created_at.desc()
-    ).all()
+# NEWS LIST PAGE
+@news_bp.route("/")
+def news_home():
 
-    return render_template("news.html", posts=posts)
+    current_app.logger.info("News page visited")
 
-@admin_bp.route("/news/create", methods=["GET", "POST"])
-def create_news():
+    posts = News.query.filter_by(status="published") \
+        .order_by(News.created_at.desc()) \
+        .all()
 
-    if request.method == "POST":
-        title = request.form.get("title")
-        summary = request.form.get("summary")
-        content = request.form.get("content")
-        status = request.form.get("status", "draft")
-        slug = generate_slug(title)
+    return render_template("news/index.html", posts=posts)
 
-        new_news = News(
-            title=title,
-            slug=slug,
-            summary=summary,
-            content=content,
-            status=status   
-        )
 
-        db.session.add(new_news)
-        db.session.commit()
-
-        flash("News created successfully!", "success")
-        return redirect(url_for("admin_bp.admin_dashboard"))
-
-    return render_template("admin/create_news.html")
-
+# SINGLE NEWS ARTICLE
 @news_bp.route("/<slug>")
 def news_post(slug):
 
-    article = News.query.filter_by(slug=slug).first_or_404()
+    current_app.logger.info(f"News article viewed: {slug}")
 
-    return render_template("news_details.html", post=article)
+    post = Content.query.filter_by(
+        content_type="news",
+        status="published"
+    ).first_or_404()
 
-@news_bp.route("/blog")
-def blog():
-    app.logger.info("Blog page visited")
+    return render_template("news/post.html", post=post)
 
-    articles = News.query.filter_by(post_type="blog")\
-        .order_by(News.created_at.desc()).all()
+@news_bp.route("/")
+def news_home():
 
-    return render_template("news.html", articles=articles)
+    articles = Content.query.filter_by(
+        content_type="news",
+        status="published"
+    ).order_by(Content.created_at.desc()).all()
+
+    return render_template("news/index.html", posts=articles)

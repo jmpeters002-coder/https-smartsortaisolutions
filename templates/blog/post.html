@@ -3,19 +3,14 @@
 {% block title %}{{ post.title }} | SmartSort AI{% endblock %}
 
 {% block content %}
-
 <section class="container mt-5">
-
     <h1>{{ post.title }}</h1>
+    <p class="text-muted">{{ post.created_at.strftime('%B %d, %Y') }}</p>
 
-<p class="text-muted">
-{{ post.created_at.strftime('%B %d, %Y') }}
-</p>
+    {% if post.image %}
+    <img src="{{ url_for('static', filename='uploads/blog/' + post.image) }}" class="img-fluid mb-3" alt="{{ post.title }}">
+    {% endif %}
 
-<article>
-{{ post.content | safe }}
-</article>
-
+    <article>{{ post.content | safe }}</article>
 </section>
-
 {% endblock %}

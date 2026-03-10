@@ -1,102 +1,81 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="container mt-5">
 
-<h2>📚 Content Management Panel</h2>
+    <h2 class="mb-4">📚 Content Management</h2>
 
-<hr>
+    <div class="d-flex justify-content-between mb-3">
 
-<h3>📝 Blogs</h3>
+        <!-- Create Content Button -->
+        <a href="{{ url_for('admin_bp.create_content') }}" class="btn btn-success">
+            ➕ Create Content
+        </a>
 
-<table class="table">
+        <!-- Search & Filter Form -->
+        <form method="GET" class="d-flex">
+            <input type="text" name="search" placeholder="Search content..." class="form-control me-2" value="{{ request.args.get('search', '') }}">
 
-<thead>
-<tr>
-<th>Title</th>
-<th>Slug</th>
-<th>Created</th>
-<th>Action</th>
-</tr>
-</thead>
+            <select name="type" class="form-select me-2">
+                <option value="">All Types</option>
+                <option value="blog" {% if request.args.get('type') == 'blog' %}selected{% endif %}>Blog</option>
+                <option value="news" {% if request.args.get('type') == 'news' %}selected{% endif %}>News</option>
+            </select>
 
-<tbody>
+            <button class="btn btn-primary">Search</button>
+        </form>
+    </div>
 
-{% for blog in blogs %}
-<tr>
-
-<td>{{ blog.title }}</td>
-<td>{{ blog.slug }}</td>
-<td>{{ blog.created_at.strftime('%Y-%m-%d') }}</td>
-
-<td>
-
-<form method="post"
-      action="{{ url_for('admin_bp.delete_blog', blog_id=blog.id) }}">
-
-<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-<button class="btn btn-danger btn-sm">
-Delete
-</button>
-
-</form>
-
-</td>
-
-</tr>
-{% endfor %}
-
-</tbody>
-</table>
-
-<hr>
-
-<h3>📰 News</h3>
-
-<table class="table">
-
-<thead>
-<tr>
-<th>Title</th>
-<th>Slug</th>
-<th>Created</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody>
-
-{% for news in news_list %}
-<tr>
-
-<td>{{ news.title }}</td>
-<td>{{ news.slug }}</td>
-<td>{{ news.created_at.strftime('%Y-%m-%d') }}</td>
-
-<td>
-
-<form method="post"
-      action="{{ url_for('admin_bp.delete_news', news_id=news.id) }}">
-
-<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-<button class="btn btn-danger btn-sm">
-Delete
-</button>
-
-</form>
-
-</td>
-
-</tr>
-{% endfor %}
-
-</tbody>
-
-</table>
+    <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in contents %}
+            <tr>
+                <td width="80">
+                    {% if post.image %}
+                        <img src="{{ url_for('static', filename='uploads/' + post.image) }}"
+                             style="width:60px;height:60px;object-fit:cover;border-radius:6px;">
+                    {% else %}
+                        <span class="text-muted">No Image</span>
+                    {% endif %}
+                </td>
+                <td>{{ post.title }}</td>
+                <td>
+                    {% if post.content_type == "blog" %}
+                        <span class="badge bg-primary">Blog</span>
+                    {% else %}
+                        <span class="badge bg-info">News</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if post.status == "published" %}
+                        <span class="badge bg-success">Published</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Draft</span>
+                    {% endif %}
+                </td>
+                <td>{{ post.created_at.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    <a href="{{ url_for('admin_bp.edit_content', content_id=post.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{{ url_for('admin_bp.delete_content', content_id=post.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this content?')">Delete</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="text-center text-muted">No content found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 </div>
-
 {% endblock %}

@@ -9,27 +9,54 @@
             <strong>❌ {{ error }}</strong>
         </div>
     {% endif %}
+    <form method="POST" action="{{ url_for('admin_bp.admin_login') }}">
     
-    <form method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div style="margin-bottom:15px;">
-            <label style="display:block;margin-bottom:5px;font-weight:600;">Username or Email</label>
-            <input type="text" name="login" placeholder="admin@yourdomain.com" required style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;box-sizing:border-box;">
-        </div>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-        <div style="margin-bottom:15px;">
-            <label style="display:block;margin-bottom:5px;font-weight:600;">Password</label>
-            <input type="password" name="password" placeholder="Enter your password" required style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;box-sizing:border-box;">
-            <small style="opacity:0.6;display:block;margin-top:5px;">Password must be at least 8 characters and include upper/lower/digit/special</small>
-        </div>
+    <div style="margin-bottom:15px;">
+        <label style="display:block;margin-bottom:5px;font-weight:600;">
+            Username
+        </label>
 
-        <button type="submit" style="width:100%;padding:12px;background:#0ea5e9;color:white;border:none;border-radius:6px;font-weight:700;cursor:pointer;transition:all 0.3s ease;">Sign In</button>
-    </form>
+        <input 
+            type="text"
+            name="login"
+            placeholder="admin"
+            required
+            style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;box-sizing:border-box;"
+        >
+    </div>
 
-    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:20px 0;">
-    
-    <p style="text-align:center;opacity:0.7;font-size:13px;">
-        <strong>Note:</strong> If you're logging in for the first time with a passkey, set a permanent password.
-    </p>
-</section>
+    <div style="margin-bottom:15px;">
+        <label style="display:block;margin-bottom:5px;font-weight:600;">
+            Password
+        </label>
+
+        <input 
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+            style="width:100%;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;box-sizing:border-box;"
+        >
+
+        <small style="opacity:0.6;display:block;margin-top:5px;">
+            Password must be at least 8 characters
+        </small>
+    </div>
+
+    <button 
+        type="submit"
+        style="width:100%;padding:12px;background:#0ea5e9;color:white;border:none;border-radius:6px;font-weight:700;cursor:pointer;transition:all 0.3s ease;"
+    >
+        Sign In
+    </button>
+
+</form>
+
+<hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:20px 0;">
+
+<p style="text-align:center;opacity:0.7;font-size:13px;">
+    <strong>Admin access only.</strong>
+</p>
 {% endblock %}
