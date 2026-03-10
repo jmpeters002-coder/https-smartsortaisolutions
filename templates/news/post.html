@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width:900px;margin:auto;background:rgb(56, 49, 150);padding:30px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.08);">
+    <h1>{{ article.title }}</h1>
+    <p style="color:rgb(187, 61, 61);">{{ article.created_at.strftime('%B %d, %Y') }}</p>
+    <hr>
+
+    {% if article.image %}
+    <img src="{{ url_for('static', filename='uploads/news/' + article.image) }}" class="img-fluid mb-3" alt="{{ article.title }}">
+    {% endif %}
+
+    <p>{{ article.content | safe }}</p>
+
+    {% if article.source_link %}
+    <p>
+        <em>Source:
+            <a href="{{ article.source_link }}" target="_blank">{{ article.source_name }}</a>
+        </em>
+    </p>
+    {% endif %}
+</div>
+{% endblock %}

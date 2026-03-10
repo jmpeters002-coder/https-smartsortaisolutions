@@ -176,3 +176,31 @@
     font-weight: 700;
     color: #0f172a;
 }
+/* Cards and Stats */
+.card h5 {
+    font-weight: 600;
+}
+
+.card p {
+    font-size: 2rem;
+    margin: 0;
+}
+
+/* Table */
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.badge {
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.btn-success, .btn-info, .btn-warning, .btn-danger {
+    min-width: 100px;
+}
+
+/* CKEditor full width inside container */
+.cke_top, .cke_contents, .cke_bottom {
+    max-width: 100%;
+}

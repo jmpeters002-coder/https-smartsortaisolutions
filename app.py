@@ -69,7 +69,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # =============================
 # OTHER APP CONFIG
 # =============================
-
+app.config["SECRET_KEY"] = "super-secret-key"
 app.secret_key = os.getenv("SECRET_KEY")
 
 app.config["UPLOAD_FOLDER"] = "static/uploads/news"
@@ -95,13 +95,10 @@ migrate.init_app(app, db)
 
 def register_blueprints():
     from routes.public_routes import public_bp
-    from routes.blog_routes import blog_bp
     from routes.order_routes import order_bp
     from routes.payment_routes import payment_bp
     from routes.admin_routes import admin_bp
-
     app.register_blueprint(public_bp)
-    app.register_blueprint(blog_bp)
     app.register_blueprint(order_bp)
     app.register_blueprint(payment_bp)
     app.register_blueprint(admin_bp)
@@ -135,6 +132,27 @@ def log_request():
     app.logger.info(
         f"{request.method} {request.path} from{request.path}")
 
+
+
+import click
+from models import User
+
+@app.cli.command("create-admin")
+@click.argument("username")
+@click.argument("password")
+def create_admin(username, password):
+
+    admin = User(
+        login=username,
+        is_admin=True
+    )
+
+    admin.set_password(password)
+
+    db.session.add(admin)
+    db.session.commit()
+
+    print("Admin created successfully!")
 # =============================
 # RUN APP
 # =============================

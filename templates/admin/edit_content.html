@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Content</h2>
+
+    <form method="POST" enctype="multipart/form-data" id="contentForm">
+
+        <!-- CONTENT TYPE (readonly) -->
+        <div class="mb-3">
+            <label for="content_type" class="form-label">Content Type</label>
+            <input type="text" id="content_type" class="form-control" value="{{ content.content_type | capitalize }}" readonly>
+        </div>
+
+        <!-- TITLE -->
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" name="title" id="title" class="form-control" value="{{ content.title }}" required>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="mb-3">
+            <label for="summary" class="form-label">Summary</label>
+            <textarea name="summary" id="summary" class="form-control" rows="2" required>{{ content.summary }}</textarea>
+        </div>
+
+        <!-- FULL CONTENT -->
+        <div class="mb-3">
+            <label for="editor" class="form-label">Content</label>
+            <textarea name="content" id="editor" class="form-control" rows="10">{{ content.content }}</textarea>
+        </div>
+
+        <!-- STATUS -->
+        <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select name="status" id="status" class="form-select">
+                <option value="draft" {% if content.status == "draft" %}selected{% endif %}>Draft</option>
+                <option value="published" {% if content.status == "published" %}selected{% endif %}>Publish</option>
+            </select>
+        </div>
+
+        <!-- IMAGE -->
+        <div class="mb-3">
+            <label class="form-label">Featured Image</label>
+            {% if content.image %}
+            <div class="mb-2">
+                <img src="{{ url_for('static', filename='uploads/' + content.image) }}" 
+                     style="width:100px;height:100px;object-fit:cover;border-radius:6px;">
+            </div>
+            {% endif %}
+            <input type="file" name="image" class="form-control">
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Update Content</button>
+            <button type="button" class="btn btn-info" id="previewBtn">Preview</button>
+            <a href="{{ url_for('admin_bp.content_manager') }}" class="btn btn-secondary">Back</a>
+        </div>
+
+    </form>
+</div>
+
+<!-- CKEditor -->
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('editor');
+
+    // Live Preview Modal
+    const previewBtn = document.getElementById('previewBtn');
+    previewBtn.addEventListener('click', () => {
+        const title = document.getElementById('title').value;
+        const summary = document.getElementById('summary').value;
+        const content = CKEDITOR.instances.editor.getData();
+
+        const modalHTML = `
+            <div class="modal fade" id="previewModal" tabindex="-1">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">${title}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><em>${summary}</em></p>
+                            <hr>
+                            ${content}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close Preview</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Append modal to body and show
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+        previewModal.show();
+
+        // Remove modal from DOM after close
+        document.getElementById('previewModal').addEventListener('hidden.bs.modal', function () {
+            this.remove();
+        });
+    });
+</script>
+{% endblock %}
