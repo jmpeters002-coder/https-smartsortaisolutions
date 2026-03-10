@@ -40,12 +40,15 @@ dist/
 staticfiles/
 uploads/
 
-# Model and large binary files (use Git LFS or external storage)
-models/
+# Large binary files (use Git LFS or external storage)
+# Note: models/ directory is NOT ignored - it contains application source code
+# Only ignore ML model files (PyTorch, TensorFlow, etc)
 *.pt
 *.pth
 *.bin
 *.ckpt
+*.h5
+*.pb
 
 # OS generated files
 ehthumbs.db
