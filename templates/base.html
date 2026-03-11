@@ -50,19 +50,31 @@
 
     <ul class="nav-links">
         <li><a href="/">Home</a></li>
-        <li><a href="/services">Services</a></li>
+        <li><a href="/jobs">Jobs</a></li>
         <li><a href="/courses">Courses</a></li>
-        <li><a href="/free-resources">Free Resources</a></li>
         <li><a href="/blog">Blog</a></li>
         <li><a href="/news">News</a></li>
-        <li><a href="/about">About</a></li>
-        <li><a class="contact-btn" href="/contact">Contact</a></li>
-
-        {% if session.get('is_admin') %}
-            <li><a class="admin-link" href="/admin/dashboard">🔐 Admin</a></li>
-            <li><a href="/admin/logout">Logout</a></li>
+        
+        {% if session.get('user_id') %}
+            <!-- User is logged in -->
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/dashboard/courses">My Courses</a></li>
+            <li><a href="/dashboard/saved">Saved</a></li>
+            <li class="nav-divider"></li>
+            <li><a href="/logout">Logout</a></li>
         {% else %}
-            <li><a class="admin-link" href="/admin/login">Admin Login</a></li>
+            <!-- User is not logged in -->
+            <li><a href="/signup" class="primary-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 5px;">Sign Up</a></li>
+            <li><a href="/login">Sign In</a></li>
+        {% endif %}
+
+        <li class="nav-divider"></li>
+        
+        {% if session.get('admin_logged_in') %}
+            <li><a class="admin-link" href="/control-panel/dashboard">🔐 Admin Panel</a></li>
+            <li><a href="/control-panel/logout">Admin Logout</a></li>
+        {% else %}
+            <li><a class="admin-link" href="/control-panel/login">Admin Login</a></li>
         {% endif %}
     </ul>
 </div>
@@ -110,6 +122,12 @@
             <li><a href="/courses">Courses</a></li>
             <li><a href="/blog">Blog</a></li>
             <li><a href="/news">News</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/affiliate">Affiliate Program</a></li>
+            <li><a href="/freelance">Freelance Opportunities</a></li>
+            <li><a href="/newsletter">Newsletter</a></li>
+            <li><a href="/admin">Admin Panel</a></li>
         </ul>
     </div>
 

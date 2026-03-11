@@ -94,6 +94,9 @@ migrate.init_app(app, db)
 # =============================
 
 def register_blueprints():
+    # Auth blueprints
+    from routes.auth_routes import auth_bp
+    
     # Existing blueprints
     from routes.public_routes import public_bp
     from routes.order_routes import order_bp
@@ -110,7 +113,10 @@ def register_blueprints():
     from routes.user_dashboard_routes import user_dashboard_bp
     from routes.courses_management_routes import courses_bp
     
-    # Register all blueprints
+    # Register auth blueprint (no prefix - uses /login, /signup, etc.)
+    app.register_blueprint(auth_bp)
+    
+    # Register all other blueprints
     app.register_blueprint(public_bp)
     app.register_blueprint(order_bp)
     app.register_blueprint(payment_bp)
@@ -186,4 +192,3 @@ if __name__ == "__main__":
         debug=debug,
         use_reloader=False
     )
-        )

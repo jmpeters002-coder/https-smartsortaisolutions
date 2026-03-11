@@ -7,6 +7,18 @@ def validate_email(email):
     return re.match(pattern, email) is not None
 
 
+def validate_password(password):
+    """
+    Validate password strength
+    Requirements:
+    - Minimum 8 characters
+    - At least one uppercase letter (optional but recommended)
+    """
+    if not password or len(password) < 8:
+        return False
+    return True
+
+
 def validate_phone(phone):
     """Validate phone number"""
     # Simple validation - adjust as needed for your region

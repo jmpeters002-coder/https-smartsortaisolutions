@@ -1,102 +1,351 @@
 {% extends "base.html" %}
 
-{% block title %}SmartSort AI Solutions | Web Development, Automation & AI,Website building & maintenance services{% endblock %}
+{% block title %}SmartSort AI - Discover AI Jobs, Courses, & Resources{% endblock %}
 
 {% block content %}
 
-<!-- HERO SECTION -->
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+}
 
-<section class="hero-section text-center">
-    <h1>Building Intelligent Digital Systems</h1>
-    <p>
-        We design scalable websites, automate business processes, and integrate AI solutions 
-        that help businesses grow smarter and faster.
-    </p>
+.hero-section h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
 
+.hero-section p {
+    font-size: 1.3rem;
+    margin-bottom: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
-<div class="hero-buttons">
-    <a href="/services" class="primary-btn">Explore Services</a>
-    <a href="/contact" class="secondary-btn">Start a Project</a>
-</div>
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
 
+.primary-btn, .secondary-btn {
+    padding: 12px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
 
-</section>
+.primary-btn {
+    background: white;
+    color: #667eea;
+}
 
-<!-- WHAT WE DO -->
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
 
-<section class="home-services">
-    <h2 class="section-title text-center">What We Do</h2>
+.secondary-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid white;
+}
 
+.secondary-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
 
-<div class="home-services-grid">
+.section-title {
+    font-size: 2.5rem;
+    margin: 40px 0;
+    font-weight: bold;
+}
 
-    <div class="mini-card">
-        <h3>🌐 Web Development</h3>
-        <p>Modern, responsive and scalable web applications tailored to your needs.Get your app ready and working in days.</p>
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin: 40px 0;
+}
+
+.content-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.content-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+}
+
+.content-card h3 {
+    margin: 15px 0;
+    color: #333;
+}
+
+.content-card .tags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+}
+
+.tag {
+    background: #f0f0f0;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.view-all-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #667eea;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.view-all-btn:hover {
+    background: #764ba2;
+}
+
+.newsletter-section {
+    background: #f8f9fa;
+    padding: 40px;
+    border-radius: 8px;
+    margin: 40px 0;
+    text-align: center;
+}
+
+.newsletter-form {
+    max-width: 400px;
+    margin: 20px auto;
+    display: flex;
+    gap: 10px;
+}
+
+.newsletter-form input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.newsletter-form button {
+    padding: 10px 20px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.opportunities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 40px 0;
+}
+
+.opportunity-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.opportunity-card h3 {
+    margin-bottom: 10px;
+}
+
+.opportunity-card a {
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    border-bottom: 2px solid white;
+}
+
+.section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    .hero-section p {
+        font-size: 1rem;
+    }
+    .content-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+</style>
+
+<!-- ========================= HERO SECTION ========================= -->
+<section class="hero-section">
+    <div class="section-container">
+        <h1>Discover AI Opportunities, Resources, and Careers</h1>
+        <p>SmartSort connects AI learners with tools, jobs, courses, and industry insights to accelerate your career in AI and tech.</p>
+        <div class="hero-buttons">
+            <a href="/jobs" class="primary-btn">🚀 Explore AI Jobs</a>
+            <a href="/courses" class="secondary-btn">📚 Browse Courses</a>
+        </div>
     </div>
+</section>
 
-    <div class="mini-card">
-        <h3>⚙️ Automation</h3>
-        <p>Eliminate repetitive tasks and improve efficiency with smart workflow systems.Move from working hard to working smart.</p>
+<!-- ========================= FEATURED AI JOBS ========================= -->
+<section class="section-container" style="padding: 60px 20px;">
+    <h2 class="section-title">Featured AI Jobs</h2>
+    <div class="content-grid">
+        <div class="content-card">
+            <h3>Machine Learning Engineer – Remote</h3>
+            <p class="tags"><span class="tag">Remote</span><span class="tag">Full-time</span></p>
+            <p>Build scalable ML models for cutting-edge AI applications. Experience with Python, TensorFlow required.</p>
+        </div>
+        <div class="content-card">
+            <h3>AI Research Intern – Tech Company</h3>
+            <p class="tags"><span class="tag">Internship</span><span class="tag">Competitive</span></p>
+            <p>Join a leading AI research team. Contribute to breakthrough research in natural language processing.</p>
+        </div>
+        <div class="content-card">
+            <h3>AI Prompt Engineer – Remote</h3>
+            <p class="tags"><span class="tag">Remote</span><span class="tag">Contract</span></p>
+            <p>Craft and optimize prompts for LLMs. Shape the future of AI-driven applications.</p>
+        </div>
     </div>
+    <a href="/jobs" class="view-all-btn">View All Jobs →</a>
+</section>
 
-    <div class="mini-card">
-        <h3> AI Integration</h3>
-        <p>Leverage AI APIs and intelligent systems to power your digital products.Make your system work today.</p>
+<!-- ========================= LATEST AI NEWS ========================= -->
+<section class="section-container" style="padding: 60px 20px; background: #f8f9fa; margin: 0 -20px;">
+    <div class="section-container">
+        <h2 class="section-title">Latest AI News</h2>
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>🤖 AI Breakthrough in Robotics</h3>
+                <p>New developments in autonomous systems are changing manufacturing. Stay updated on the latest breakthroughs.</p>
+            </div>
+            <div class="content-card">
+                <h3>🔧 OpenAI Releases New Model</h3>
+                <p>The latest language model offers improved reasoning and reduced hallucinations. What you need to know.</p>
+            </div>
+            <div class="content-card">
+                <h3>📊 Google AI Updates</h3>
+                <p>Google announces new tools for responsible AI development. Industry implications analyzed.</p>
+            </div>
+        </div>
+        <a href="/news" class="view-all-btn">Read More News →</a>
     </div>
+</section>
 
-    <div class="mini-card">
-        <h3>📚 Tech Education</h3>
-        <p>Learn frontend, backend, automation and AI technologies through practical courses.Get upskilled in less than 3 months for a more competitive edge and secure your future.</p>
+<!-- ========================= AI COURSES ========================= -->
+<section class="section-container" style="padding: 60px 20px;">
+    <h2 class="section-title">Learn AI & Tech Skills</h2>
+    <div class="content-grid">
+        <div class="content-card">
+            <h3>🎓 Intro to AI</h3>
+            <p>Beginner-friendly introduction to artificial intelligence, machine learning, and deep learning concepts.</p>
+            <div class="tags"><span class="tag">Beginner</span><span class="tag">4 weeks</span></div>
+        </div>
+        <div class="content-card">
+            <h3>💬 Prompt Engineering</h3>
+            <p>Master the art of crafting effective prompts for language models like ChatGPT and Claude.</p>
+            <div class="tags"><span class="tag">Intermediate</span><span class="tag">3 weeks</span></div>
+        </div>
+        <div class="content-card">
+            <h3>🧠 Machine Learning Foundations</h3>
+            <p>Build a solid foundation in ML algorithms, data preprocessing, and model evaluation.</p>
+            <div class="tags"><span class="tag">Advanced</span><span class="tag">6 weeks</span></div>
+        </div>
     </div>
-
-</div>
-
-
+    <a href="/courses" class="view-all-btn">Explore All Courses →</a>
 </section>
 
-<!-- TRUST SECTION -->
-
-<section class="trust-section text-center">
-    <h2>Why Choose SmartSort?</h2>
-    <p>
-        We combine engineering precision with business understanding to build reliable, 
-        scalable and future-ready systems.
-    </p>
-
-
-<div class="trust-points">
-    <div>✔ Modern Technology Stack</div>
-    <div>✔ Scalable Architecture</div>
-    <div>✔ Clean & Secure Code</div>
-    <div>✔ Business-Oriented Solutions</div>
-    <div>✔ mentored project based learning</div>
-    <div>✔ Ongoing Support & Maintenance</div>
-</div>
-
-
+<!-- ========================= BLOG ARTICLES ========================= -->
+<section class="section-container" style="padding: 60px 20px; background: #f8f9fa; margin: 0 -20px;">
+    <div class="section-container">
+        <h2 class="section-title">Latest Blog Articles</h2>
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>📖 How to Become an AI Engineer</h3>
+                <p>A roadmap for transitioning into AI engineering. Skills, resources, and career paths explained.</p>
+            </div>
+            <div class="content-card">
+                <h3>🛠️ Best AI Tools in 2026</h3>
+                <p>Comprehensive guide to the top AI tools for productivity, content creation, and development.</p>
+            </div>
+            <div class="content-card">
+                <h3>🚀 AI Career Roadmap</h3>
+                <p>Strategic guide to building a successful career in artificial intelligence and machine learning.</p>
+            </div>
+        </div>
+        <a href="/blog" class="view-all-btn">Read More Articles →</a>
+    </div>
 </section>
 
-<!-- LATEST CONTENT -->
-
-<section class="latest-content text-center">
-    <h2>Latest Insights</h2>
-    <p>Stay updated with AI trends, automation insights and development strategies.</p>
-
-
-<div class="content-buttons">
-    <a href="/blog" class="primary-btn">Read insightful Blogs</a>
-    <a href="/news" class="secondary-btn">View latest AI News</a>
-</div>
-
-
+<!-- ========================= NEWSLETTER SIGNUP ========================= -->
+<section class="section-container" style="padding: 40px 20px;">
+    <div class="newsletter-section">
+        <h2>Stay Updated with AI Jobs & News</h2>
+        <p>Get weekly AI opportunities, learning resources, and industry insights delivered to your inbox.</p>
+        <form class="newsletter-form" method="POST" action="/newsletter/subscribe">
+            <input type="email" name="email" placeholder="Enter your email" required>
+            <button type="submit">Subscribe</button>
+        </form>
+    </div>
 </section>
 
-<!-- FINAL CTA -->
-
-<section class="final-cta text-center">
-    <h2>Ready to Build Something Powerful?</h2>
-    <a href="/contact" class="cta-main-btn">Work With our collaborative team at SmartSort</a>
+<!-- ========================= PLATFORM OPPORTUNITIES ========================= -->
+<section class="section-container" style="padding: 60px 20px;">
+    <h2 class="section-title text-center">Opportunities on SmartSort</h2>
+    <div class="opportunities-grid">
+        <div class="opportunity-card">
+            <h3>💼 Freelance Work</h3>
+            <p>Build your portfolio and earn by taking on AI and tech projects.</p>
+            <a href="/freelance">Apply Now →</a>
+        </div>
+        <div class="opportunity-card">
+            <h3>🤝 Affiliate Program</h3>
+            <p>Earn commissions by referring courses, jobs, and services.</p>
+            <a href="/affiliate">Join Program →</a>
+        </div>
+        <div class="opportunity-card">
+            <h3>🌟 Partner With Us</h3>
+            <p>Collaborate with SmartSort to reach AI enthusiasts and professionals.</p>
+            <a href="/contact">Get in Touch →</a>
+        </div>
+    </div>
 </section>
+
+<!-- ========================= FINAL CTA ========================= -->
+<section class="hero-section" style="padding: 60px 20px;">
+    <div class="section-container">
+        <h2>Ready to Advance Your AI Career?</h2>
+        <p>Join thousands of AI learners, professionals, and innovators on SmartSort.</p>
+        <div class="hero-buttons">
+            <a href="/signup" class="primary-btn">Create Free Account</a>
+            <a href="/login" class="secondary-btn">Sign In</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
 
 {% endblock %}
