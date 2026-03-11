@@ -186,6 +186,18 @@ def create_admin(username, password):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     debug = os.getenv("FLASK_ENV") == "development"
+    
+    # Print dev link
+    print("\n" + "="*70)
+    print("✨ SmartSort AI Server Started")
+    print("="*70)
+    print(f"🌐 Development Link: http://localhost:{port}")
+    print(f"🔗 Full URL: http://127.0.0.1:{port}")
+    print(f"🐛 Debug Mode: {'✓ ON' if debug else '✗ OFF'}")
+    print("="*70)
+    print("💡 Tip: Press Ctrl+C to stop the server")
+    print("="*70 + "\n")
+    
     app.run(
         host="0.0.0.0", 
         port=port, 
